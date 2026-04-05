@@ -204,9 +204,34 @@
       { name:"Légende du Foot 👑", xp:2300, desc:"Ballon d'Or. Légende absolue. Il n'y a plus rien au-dessus." }
     ];
 
+
+    const REWARDS = [
+      { id:"barrages", rank:"Barrages 🔰",        xp:120,  options:[
+          "🎬 Choisir le film / la série du soir en famille",
+          "🎮 1h de FIFA ou console supplémentaire ce weekend",
+          "🍕 Commander ton plat préféré (pizza, sushi…)",
+          "🌙 Rester dehors 1h de plus avec tes amis"
+        ]
+      },
+      { id:"8eme",    rank:"8ème de Finale ⚡",   xp:300,  options:["⚽ Pack FUT sur FIFA — valeur 15€"] },
+      { id:"quart",   rank:"Quart de Finale 🎯",  xp:550,  options:["👕 Équipement de foot : sweat ou jogging au choix"] },
+      { id:"demi",    rank:"Demi-Finale 🔥",       xp:850,  options:["🏎️ Journée karting ou foot (terrain payant) avec tes amis"] },
+      { id:"finale",  rank:"Finale 💥",            xp:1200, options:[
+          "👕 Maillot officiel de ton choix avec flocage joueur préféré",
+          "🎮 Abonnement FIFA Ultimate Team ou carte cadeau gaming"
+        ]
+      },
+      { id:"champion",rank:"Champion 🏆",          xp:1700, options:[
+          "🏟️ Billet pour un vrai match de Ligue des Champions",
+          "🎮 Console / upgrade gaming (manette pro, casque…)"
+        ]
+      },
+      { id:"legende", rank:"Légende du Foot 👑",   xp:2300, options:["✈️ Séjour football : stage académie, city trip + match live"] }
+    ];
+
     const STORAGE_KEY = "aydann-study-v5";
     const PARENT_CODE = "9999";
-    const INIT = { answers:{}, xp:0, streak:0, lastDate:null, theme:"light" };
+    const INIT = { answers:{}, xp:0, streak:0, lastDate:null, theme:"light", rewards:{} };
 
     // ── Supabase config — remplace YOUR_URL et YOUR_ANON_KEY ──────────
     const SUPA_URL  = "https://hdkprppxbzgjlryvgofa.supabase.co";
@@ -314,6 +339,99 @@
     // ═══════════════════════════════════════════════════════
     // APP
     // ═══════════════════════════════════════════════════════
+
+    function RewardsView({ T, data, setData }) {
+      const xp = data.xp || 0;
+      const rewards = data.rewards || {};
+      const [picking, setPicking] = React.useState(null); // id of reward being claimed
+
+      const claimReward = (id, optionIdx) => {
+        setData(p => ({ ...p, rewards: { ...p.rewards, [id]: { status:"claimed", option:optionIdx, claimedDate: new Date().toISOString() } } }));
+        setPicking(null);
+      };
+
+      return (
+        <div style={{ padding:"0 4px" }}>
+          <div style={{ fontSize:22, fontWeight:900, marginBottom:6, display:"flex", alignItems:"center", gap:10 }}>
+            🎁 <span>Mes Récompenses</span>
+          </div>
+          <div style={{ fontSize:13, color:T.mt, fontWeight:700, marginBottom:20 }}>
+            Atteins un palier XP → choisis ta récompense → Papa confirme 🎉
+          </div>
+
+          {REWARDS.map((rw, i) => {
+            const st = rewards[rw.id];
+            const unlocked = xp >= rw.xp;
+            const status = st?.status || (unlocked ? "claimable" : "locked");
+            const pct = !unlocked ? Math.min(100, Math.round((xp / rw.xp) * 100)) : 100;
+            const isClaiming = picking === rw.id;
+
+            let borderColor = T.bd, bgColor = T.sf, badgeBg = T.bd, badgeColor = T.mt, badgeLabel = "🔒 Verrouillé";
+            if (status === "claimable") { borderColor = "#FFC800"; bgColor = "#FFC80012"; badgeBg = "#FFC800"; badgeColor = "#000"; badgeLabel = "🎁 À réclamer !"; }
+            if (status === "claimed")   { borderColor = "#1CB0F6"; bgColor = "#1CB0F612"; badgeBg = "#1CB0F6"; badgeColor = "#fff"; badgeLabel = "⏳ En attente Papa"; }
+            if (status === "given")     { borderColor = "#58CC02"; bgColor = "#58CC0212"; badgeBg = "#58CC02"; badgeColor = "#fff"; badgeLabel = "✅ Reçu !"; }
+
+            return (
+              <div key={rw.id} className="pop" style={{ background:bgColor, border:`2px solid ${borderColor}`, borderBottomWidth:5, borderRadius:20, padding:"14px 16px", marginBottom:14, animationDelay:`${i*0.05}s`, opacity:status==="locked"?0.6:1 }}>
+                {/* Header */}
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
+                  <div>
+                    <div style={{ fontWeight:900, fontSize:16 }}>{rw.rank}</div>
+                    <div style={{ fontSize:12, color:T.mt, fontWeight:700 }}>{rw.xp} XP requis</div>
+                  </div>
+                  <div style={{ background:badgeBg, color:badgeColor, borderRadius:12, padding:"4px 10px", fontSize:12, fontWeight:800, whiteSpace:"nowrap" }}>{badgeLabel}</div>
+                </div>
+
+                {/* Progress bar (only if locked) */}
+                {status === "locked" && (
+                  <div style={{ marginBottom:10 }}>
+                    <div style={{ height:6, background:T.bd, borderRadius:3, overflow:"hidden" }}>
+                      <div style={{ height:"100%", width:`${pct}%`, background:"#FFC800", borderRadius:3, transition:"width 0.5s" }} />
+                    </div>
+                    <div style={{ fontSize:11, color:T.mt, fontWeight:700, marginTop:4 }}>{xp} / {rw.xp} XP — encore {rw.xp - xp} XP</div>
+                  </div>
+                )}
+
+                {/* Options */}
+                {status === "claimed" && st?.option !== undefined && (
+                  <div style={{ background:T.bg, borderRadius:12, padding:"8px 12px", fontSize:14, fontWeight:700, color:T.tx, marginBottom:8 }}>
+                    {rw.options[st.option]}
+                  </div>
+                )}
+                {status === "given" && st?.option !== undefined && (
+                  <div style={{ background:T.bg, borderRadius:12, padding:"8px 12px", fontSize:14, fontWeight:700, color:"#58CC02", marginBottom:8 }}>
+                    {rw.options[st.option]}
+                  </div>
+                )}
+
+                {/* Claim button */}
+                {status === "claimable" && !isClaiming && (
+                  <button className="push" onClick={() => rw.options.length === 1 ? claimReward(rw.id, 0) : setPicking(rw.id)}
+                    style={{ background:"#FFC800", color:"#000", border:"none", borderRadius:14, padding:"12px 20px", fontWeight:900, cursor:"pointer", fontSize:15, width:"100%", boxShadow:"0 4px 0 #C89E00", marginTop:4 }}>
+                    🎁 Réclamer cette récompense !
+                  </button>
+                )}
+
+                {/* Option picker (multi-choice rewards) */}
+                {status === "claimable" && isClaiming && (
+                  <div style={{ marginTop:8 }}>
+                    <div style={{ fontSize:13, fontWeight:800, color:T.mt, marginBottom:8 }}>Choisis ta récompense :</div>
+                    {rw.options.map((opt, oi) => (
+                      <button key={oi} className="push" onClick={() => claimReward(rw.id, oi)}
+                        style={{ display:"block", width:"100%", background:T.bg, border:`2px solid ${T.bd}`, borderBottomWidth:4, borderRadius:14, padding:"12px 14px", marginBottom:8, textAlign:"left", fontWeight:700, fontSize:14, color:T.tx, cursor:"pointer" }}>
+                        {opt}
+                      </button>
+                    ))}
+                    <button onClick={() => setPicking(null)} style={{ background:"none", border:"none", color:T.mt, fontSize:13, fontWeight:700, cursor:"pointer" }}>Annuler</button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
 
     function EntryView({ T, data, setView, setParentMode, totalProgress }) {
       const [showCode, setShowCode] = React.useState(false);
@@ -722,7 +840,7 @@
                   </button>
                 )}
                 <div style={{ fontSize:26, fontWeight:900, color:T.tx, marginTop:view==="home"?8:0 }}>
-                  {view==="entry"?"":view==="home"?"Aydann Champions Work":view==="glossary"?"📖 Glossaire":view==="calendar"?"📅 Calendrier":view==="parent"?"Coin Parents 🛡️":view==="week"&&sub?sub.name:view==="exercise"&&sub?"Mission !":""}
+                  {view==="entry"?"":view==="home"?"Aydann Champions Work":view==="rewards"?"🎁 Récompenses":view==="glossary"?"📖 Glossaire":view==="calendar"?"📅 Calendrier":view==="parent"?"Coin Parents 🛡️":view==="week"&&sub?sub.name:view==="exercise"&&sub?"Mission !":""}
                 </div>
               </div>
               <div style={{ display:"flex", alignItems:"center", gap:10 }}>
@@ -784,7 +902,13 @@
                 );
               })}
               {/* ── NAVIGATION EXTRA ── */}
-              <div style={{ display:"flex", gap:12, marginTop:16 }}>
+              <div style={{ display:"flex", gap:8, marginTop:16, flexWrap:"wrap" }}>
+                <button className="push" onClick={()=>setView("rewards")}
+                  style={{ flex:1, minWidth:90, background:"linear-gradient(135deg,#FFC800,#e5b200)", border:"none", borderBottomWidth:5, borderRadius:20, padding:"14px 10px", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6, boxShadow:"0 5px 0 #b89100" }}>
+                  <div style={{ fontSize:28 }}>🎁</div>
+                  <div style={{ fontWeight:800, fontSize:13, color:"#000" }}>Récompenses</div>
+                  <div style={{ fontSize:11, color:"rgba(0,0,0,0.6)", fontWeight:700 }}>Mes paliers</div>
+                </button>
                 <button className="push" onClick={()=>setView("calendar")}
                   style={{ flex:1, background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:16, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
                   <div style={{ fontSize:32 }}>📅</div>
@@ -1032,6 +1156,39 @@
                     </div>
                   </div>
 
+
+                  {/* ── Récompenses réclamées — à valider ── */}
+                  {(() => {
+                    const claimedRewards = REWARDS.filter(rw => (data.rewards||{})[rw.id]?.status === "claimed");
+                    if (claimedRewards.length === 0) return null;
+                    return (
+                      <div className="pop" style={{ background:T.sf, border:`2px solid #FFC800`, borderBottomWidth:5, borderRadius:20, padding:"16px 18px", marginBottom:18 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+                          <div style={{ fontSize:28 }}>🎁</div>
+                          <div>
+                            <div style={{ fontSize:18, fontWeight:900 }}>Récompenses à donner</div>
+                            <div style={{ fontSize:13, color:T.mt, fontWeight:700 }}>{claimedRewards.length} récompense{claimedRewards.length>1?"s":""} réclamée{claimedRewards.length>1?"s":""}</div>
+                          </div>
+                        </div>
+                        {claimedRewards.map(rw => {
+                          const st = (data.rewards||{})[rw.id];
+                          return (
+                            <div key={rw.id} style={{ background:T.bg, border:`2px solid #FFC800`, borderBottomWidth:4, borderRadius:16, padding:"12px 14px", marginBottom:10 }}>
+                              <div style={{ fontWeight:900, fontSize:15, marginBottom:4 }}>{rw.rank}</div>
+                              <div style={{ background:T.sf, borderRadius:10, padding:"8px 12px", fontSize:14, fontWeight:700, color:T.tx, marginBottom:12 }}>
+                                {rw.options[st?.option ?? 0]}
+                              </div>
+                              <button className="push" onClick={()=>setData(p=>({...p, rewards:{...p.rewards, [rw.id]:{...p.rewards[rw.id], status:"given", givenDate:new Date().toISOString()}}}))}
+                                style={{ background:"#58CC02", color:"#fff", border:"none", borderRadius:12, padding:"10px 16px", fontWeight:900, cursor:"pointer", fontSize:14, width:"100%", boxShadow:"0 4px 0 #46A302" }}>
+                                ✅ J'ai donné cette récompense
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+
                   {/* ── Corrections en attente ── */}
                   <div className="pop" style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:"16px 18px", marginBottom:18 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
@@ -1070,6 +1227,7 @@
               );
             })()}
 
+            {view==="rewards" && <RewardsView T={T} data={data} setData={setData} />}
             {view==="glossary" && <GlossaryView T={T} />}
             {view==="calendar" && <CalendarView T={T} data={data} getDarker={getDarker} />}
 
