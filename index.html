@@ -32,6 +32,7 @@
     @keyframes preBounce { from { transform: translateY(0); } to { transform: translateY(-24px) rotate(15deg); } }
     @keyframes dotPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
   <!-- Splash affiché AVANT le chargement React -->
@@ -207,9 +208,38 @@
     const PARENT_CODE = "9999";
     const INIT = { answers:{}, xp:0, streak:0, lastDate:null, theme:"light" };
 
+    // ── Supabase config — remplace YOUR_URL et YOUR_ANON_KEY ──────────
+    const SUPA_URL  = "https://hdkprppxbzgjlryvgofa.supabase.co";
+    const SUPA_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhka3BycHB4YnpnamxyeXZnb2ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzOTQ0MjIsImV4cCI6MjA5MDk3MDQyMn0.ajB37Gw4MF0Ghb3V-z_s0_FcmmYTunUhJoTTLogjE-g";
+    const SUPA_ID   = "aydann"; // identifiant de la ligne dans la table
+    const sb = (SUPA_URL !== "YOUR_SUPABASE_URL")
+      ? supabase.createClient(SUPA_URL, SUPA_KEY)
+      : null; // Supabase désactivé si non configuré
+
     // ── Helpers ───────────────────────────────────────────
-    function load() { try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
-    function save(d) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) {} }
+    // localStorage = cache instantané + fallback offline
+    function loadLocal() { try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+    function saveLocal(d) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) {} }
+
+    // Supabase = source de vérité multi-appareils
+    async function loadCloud() {
+      if (!sb) return null;
+      try {
+        const { data, error } = await sb.from("progress").select("data").eq("id", SUPA_ID).single();
+        if (error || !data) return null;
+        return data.data;
+      } catch(e) { return null; }
+    }
+    async function saveCloud(d) {
+      if (!sb) return;
+      try { await sb.from("progress").upsert({ id: SUPA_ID, data: d, updated_at: new Date().toISOString() }); }
+      catch(e) {}
+    }
+
+    // load() = lecture synchrone localStorage (init instantanée)
+    function load() { return loadLocal(); }
+    // save() = écrit local + cloud (async, non-bloquant)
+    function save(d) { saveLocal(d); saveCloud(d); }
     function getRank(xp) { let r = RANKS[0]; RANKS.forEach(rk => { if (xp >= rk.xp) r = rk; }); return r; }
     function getNextRank(xp) { for (const r of RANKS) { if (xp < r.xp) return r; } return null; }
     function getDarker(hex) {
@@ -518,6 +548,7 @@
 
     function App() {
       const [data, setData] = useState(() => load() || INIT);
+      const [synced, setSynced] = useState(false);
       const [view, setView] = useState("entry");
       const [subId, setSubId] = useState(null);
       const [weekN, setWeekN] = useState(1);
@@ -544,6 +575,25 @@
       }, []);
 
       useEffect(() => { save(data); }, [data]);
+
+      // ── Sync cloud → local au démarrage (priorité cloud si plus récent)
+      useEffect(() => {
+        if (synced) return;
+        loadCloud().then(cloud => {
+          if (!cloud) { setSynced(true); return; }
+          const local = loadLocal();
+          // Si cloud a plus d'XP ou plus de réponses → prend le cloud
+          const cloudXP = cloud.xp || 0;
+          const localXP = (local||{}).xp || 0;
+          const cloudAns = Object.keys(cloud.answers||{}).length;
+          const localAns = Object.keys((local||{}).answers||{}).length;
+          if (cloudXP > localXP || cloudAns > localAns) {
+            saveLocal(cloud);
+            setData(cloud);
+          }
+          setSynced(true);
+        });
+      }, []);
 
       const T = TH[data.theme || "light"];
       const rank = getRank(data.xp||0);
