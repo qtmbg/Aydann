@@ -52,145 +52,380 @@
     // ═══════════════════════════════════════════════════════
     const EXERCISES = {
       maths: {
-        name: "Maths", color: "#FF4B4B", icon: "➕",
+        name: "Maths",
+        color: "#FF4B4B",
+        icon: "⚽",
         weeks: {
-          1: { title: "Proportionnalité", exercises: [
-            { id:"m1-1", type:"numeric", q:"Mbappé a 97 de vitesse sur un max de 99. Quel pourcentage ? (arrondi à 0.1)", answer:98.0, tolerance:0.1, hint:"Divise 97 par 99 × 100", xp:15, tag:"fut" },
-            { id:"m1-2", type:"numeric", q:"Le PSG marque 2.4 buts/match en moyenne. Combien sur 38 journées ?", answer:91.2, tolerance:0.1, hint:"2.4 × 38", xp:10, tag:"foot" },
-            { id:"m1-3", type:"numeric", q:"Le Real marque 2.1 buts/match. Combien sur 38 journées ?", answer:79.8, tolerance:0.1, hint:"2.1 × 38", xp:10, tag:"foot" },
-            { id:"m1-4", type:"numeric", q:"Une carte FUT à 80 000 crédits perd 15%. Nouveau prix ?", answer:68000, tolerance:0, hint:"80000 − (80000 × 15/100)", xp:15, tag:"fut" },
-            { id:"m1-5", type:"numeric", q:"Échelle 1/50000 : 6 cm sur la carte = combien de km réels ?", answer:3, tolerance:0, hint:"6 × 50000 = 300000 cm = 3 km", xp:10 },
-            { id:"m1-6", type:"write", q:"Ouvre ton manuel, fais les exercices sur la proportionnalité. Écris les numéros et tes réponses.", minChars:100, xp:10 },
-          ]},
-          2: { title: "Pourcentages", exercises: [
-            { id:"m2-1", type:"numeric", q:"Une carte FUT à 50 000 crédits baisse de 20%. Nouveau prix ?", answer:40000, tolerance:0, hint:"50000 × 0.80", xp:15, tag:"fut" },
-            { id:"m2-2", type:"numeric", q:"Cette carte à 40 000 remonte de 15%. Prix final ?", answer:46000, tolerance:0, hint:"40000 × 1.15", xp:15, tag:"fut" },
-            { id:"m2-3", type:"numeric", q:"On a perdu combien par rapport au prix initial de 50 000 ?", answer:4000, tolerance:0, hint:"50000 − 46000", xp:10, tag:"fut" },
-            { id:"m2-4", type:"numeric", q:"Le Real : 62% de possession sur 90 min. Combien de minutes ? (arrondi 0.1)", answer:55.8, tolerance:0.1, hint:"90 × 62 / 100", xp:15, tag:"foot" },
-            { id:"m2-5", type:"numeric", q:"Le PSG : 58% de possession sur 90 min. Combien de minutes ?", answer:52.2, tolerance:0.1, hint:"90 × 58 / 100", xp:10, tag:"foot" },
-            { id:"m2-6", type:"numeric", q:"Le Barça : 67% de possession. Minutes avec le ballon ? (arrondi 0.1)", answer:60.3, tolerance:0.1, xp:10, tag:"foot" },
-          ]},
-          3: { title: "Calcul littéral", exercises: [
-            { id:"m3-1", type:"numeric", q:"FIFA : Note = (vitesse+tir+passe+dribble+défense+physique)/6. Mbappé : 97+93+80+92+36+78. Quelle note ? (arrondi 0.1)", answer:79.3, tolerance:0.2, hint:"476 ÷ 6", xp:15, tag:"fut" },
-            { id:"m3-2", type:"numeric", q:"Si x = 5, calcule : 3x + 7", answer:22, tolerance:0, hint:"3×5 + 7", xp:10 },
-            { id:"m3-3", type:"numeric", q:"Développe et calcule pour x=3 : 2(x + 4)", answer:14, tolerance:0, hint:"2x + 8 = 6 + 8", xp:10 },
-            { id:"m3-4", type:"numeric", q:"Réduis : 5x + 3 + 2x − 1. Donne le coefficient de x.", answer:7, tolerance:0, hint:"5x + 2x = 7x", xp:10 },
-            { id:"m3-5", type:"write", q:"Choisis 3 joueurs FUT. Pour chacun, écris les 6 stats et calcule la note moyenne. Montre tes calculs.", minChars:150, xp:15, tag:"fut" },
-          ]},
-          4: { title: "Statistiques & Géométrie", exercises: [
-            { id:"m4-1", type:"numeric", q:"Terrain de foot 105m × 68m. Périmètre en mètres ?", answer:346, tolerance:0, hint:"2 × (105 + 68)", xp:10, tag:"foot" },
-            { id:"m4-2", type:"numeric", q:"Aire du terrain en m² ?", answer:7140, tolerance:0, hint:"105 × 68", xp:10, tag:"foot" },
-            { id:"m4-3", type:"numeric", q:"Surface de réparation : 40.32m × 16.5m. Aire en m² ? (arrondi 0.1)", answer:665.3, tolerance:0.3, hint:"40.32 × 16.5", xp:10, tag:"foot" },
-            { id:"m4-4", type:"numeric", q:"La surface de réparation représente quel % du terrain ? (arrondi 0.1)", answer:9.3, tolerance:0.2, hint:"(665.28/7140) × 100", xp:15, tag:"foot" },
-            { id:"m4-5", type:"write", q:"Trouve les 6 derniers résultats du PSG. Calcule la moyenne de buts marqués et encaissés. Montre tes calculs.", minChars:120, xp:15, tag:"foot" },
-          ]}
+          1: {
+            title: "Théorème de Pythagore",
+            exercises: [
+              { id:"m1-1", type:"numeric", q:"Un terrain de foot mesure 105m × 68m. Quelle est la longueur de sa diagonale ? Arrondi à 0.1", answer:124.8, tolerance:0.3, hint:"√(105² + 68²)", xp:15, tag:"foot" },
+              { id:"m1-2", type:"numeric", q:"Dans un triangle rectangle, les deux côtés de l'angle droit mesurent 6cm et 8cm. Hypoténuse ?", answer:10, tolerance:0, hint:"6² + 8² = 100 → √100", xp:10 },
+              { id:"m1-3", type:"numeric", q:"Hypoténuse = 13cm, un côté = 5cm. Quel est l'autre côté ?", answer:12, tolerance:0, hint:"13² - 5² = 144 → √144", xp:10 },
+              { id:"m1-4", type:"multi", q:"Le théorème de Pythagore s'applique uniquement dans un triangle :", options:["équilatéral", "isocèle", "rectangle", "quelconque"], answer:2, xp:10 },
+              { id:"m1-5", type:"numeric", q:"Un poteau de corner fait 1.5m, son ombre 2m au sol. Quelle est la distance sommet-bout de l'ombre ? Arrondi à 0.1", answer:2.5, tolerance:0.1, hint:"√(1.5² + 2²)", xp:15, tag:"foot" },
+              { id:"m1-6", type:"write", q:"Fais 3 exercices du manuel sur le théorème de Pythagore. Note les énoncés et tes calculs complets. Vérifie tes résultats.", minChars:200, xp:15 },
+            ]
+          },
+          2: {
+            title: "Volumes & Aires",
+            exercises: [
+              { id:"m2-1", type:"numeric", q:"Volume d'un cylindre : rayon 11cm, hauteur 22cm. Arrondi à l'unité. (π ≈ 3.14)", answer:8339, tolerance:50, hint:"π × r² × h = 3.14 × 121 × 22", xp:15 },
+              { id:"m2-2", type:"numeric", q:"Aire d'un disque central de rayon 9.15m. Arrondi à 0.1 m². (π ≈ 3.14)", answer:263.0, tolerance:1.5, hint:"π × 9.15²", xp:10, tag:"foot" },
+              { id:"m2-3", type:"multi", q:"La formule du volume d'un prisme droit est :", options:["Aire base × hauteur", "Périmètre × hauteur", "Aire base + hauteur", "2 × Aire base"], answer:0, xp:10 },
+              { id:"m2-4", type:"numeric", q:"Vestiaire en forme de prisme rectangulaire : 8m × 5m × 3m. Volume en m³ ?", answer:120, tolerance:0, hint:"8 × 5 × 3", xp:10, tag:"foot" },
+              { id:"m2-5", type:"numeric", q:"Un ballon de foot sphérique de rayon 11cm. Volume en cm³ ? Arrondi à l'unité. (V = 4/3 × π × r³, π ≈ 3.14)", answer:5572, tolerance:30, hint:"4/3 × 3.14 × 11³", xp:15, tag:"foot" },
+              { id:"m2-6", type:"write", q:"Calcule le volume et l'aire totale de ta chambre (mesure ou estime les dimensions). Montre tous tes calculs avec les formules utilisées.", minChars:200, xp:15 },
+            ]
+          },
+          3: {
+            title: "Calcul littéral & Équations",
+            exercises: [
+              { id:"m3-1", type:"numeric", q:"Résous : 3x + 7 = 22. Valeur de x ?", answer:5, tolerance:0, hint:"3x = 22 - 7 = 15", xp:10 },
+              { id:"m3-2", type:"multi", q:"Résoudre 2x - 4 = 10 donne :", options:["x = 3", "x = 7", "x = 8", "x = 5"], answer:1, xp:10 },
+              { id:"m3-3", type:"numeric", q:"Note FIFA = (vitesse + tir + dribble + physique) ÷ 4. Mbappé : 97, 90, 92, 78. Note ?", answer:89.25, tolerance:0.1, hint:"(97+90+92+78) ÷ 4", xp:15, tag:"fut" },
+              { id:"m3-4", type:"numeric", q:"Résous : 5x - 3 = 2x + 9. Valeur de x ?", answer:4, tolerance:0, hint:"5x - 2x = 9 + 3 → 3x = 12", xp:15 },
+              { id:"m3-5", type:"multi", q:"Factoriser 6x + 9 donne :", options:["2(3x + 9)", "3(2x + 3)", "6(x + 3)", "9(x + 1)"], answer:1, xp:10 },
+              { id:"m3-6", type:"write", q:"Résous 3 équations du premier degré de ton cahier. Écris l'énoncé, la résolution étape par étape et la vérification.", minChars:200, xp:15 },
+            ]
+          },
+          4: {
+            title: "Proportionnalité & Statistiques",
+            exercises: [
+              { id:"m4-1", type:"numeric", q:"Mbappé court 11.2 km par match. Sur 38 matchs, combien de km ?", answer:425.6, tolerance:0.2, hint:"11.2 × 38", xp:10, tag:"foot" },
+              { id:"m4-2", type:"multi", q:"La médiane d'une série statistique est :", options:["La valeur la plus fréquente", "La valeur centrale qui partage la série en 2", "La moyenne des valeurs", "La valeur maximum"], answer:1, xp:10 },
+              { id:"m4-3", type:"numeric", q:"Notes de Mbappé sur 5 matchs : 8, 9, 7, 8, 6. Moyenne arrondie à 0.1 ?", answer:7.6, tolerance:0, hint:"(8+9+7+8+6) ÷ 5", xp:10, tag:"foot" },
+              { id:"m4-4", type:"numeric", q:"Sur 200 cartes FUT ouvertes, 15 sont rares. Taux en % ?", answer:7.5, tolerance:0, hint:"15 ÷ 200 × 100", xp:15, tag:"fut" },
+              { id:"m4-5", type:"numeric", q:"Une carte FUT coûte 45 000 crédits. Après une hausse de 12%, nouveau prix ?", answer:50400, tolerance:0, hint:"45000 × 1.12", xp:15, tag:"fut" },
+              { id:"m4-6", type:"write", q:"Prends les résultats des 10 derniers matchs du PSG (score). Calcule la moyenne et la médiane de buts marqués. Montre tous les calculs.", minChars:250, xp:20, tag:"foot" },
+            ]
+          },
         }
       },
       anglais: {
-        name: "Anglais", color: "#1CB0F6", icon: "🔵",
+        name: "Anglais",
+        color: "#1CB0F6",
+        icon: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
         weeks: {
-          1: { title: "Reading & Vocabulary", exercises: [
-            { id:"e1-1", type:"write", q:"Go to UEFA.com in English. Find an article about a recent Champions League match. Write 8 sentences IN ENGLISH summarizing it.", minChars:250, xp:15, tag:"foot" },
-            { id:"e1-2", type:"write", q:"From the article you read, list 10 new English words with their French translation.", minChars:100, xp:10, tag:"foot" },
-            { id:"e1-3", type:"multi", q:"Which is the correct past participle of 'to score'?", options:["scored","scoring","scores","scoren"], answer:0, xp:10 },
-            { id:"e1-4", type:"multi", q:"'Mbappé has scored 3 goals this season.' What tense is this?", options:["Past simple","Present perfect","Present continuous","Past perfect"], answer:1, xp:10 },
-          ]},
-          2: { title: "Grammar & Expression", exercises: [
-            { id:"e2-1", type:"write", q:"Write Mbappé's biography in English (15 lines min). Include: birthplace, clubs, achievements, why you admire him. Use past simple AND present perfect.", minChars:400, xp:20, tag:"foot" },
-            { id:"e2-2", type:"multi", q:"'He ___ to Real Madrid last summer.' Choose the correct form.", options:["has moved","moved","has move","moving"], answer:1, xp:10 },
-            { id:"e2-3", type:"multi", q:"'They ___ 3 Champions League titles since 2020.' Choose correctly.", options:["won","have won","has won","winning"], answer:1, xp:10 },
-          ]},
-          3: { title: "Listening & Writing", exercises: [
-            { id:"e3-1", type:"write", q:"Watch a match highlights video in English on YouTube (5 min+). Write 10 sentences about what you understood. Include the video link.", minChars:300, xp:15, tag:"foot" },
-            { id:"e3-2", type:"write", q:"Put FIFA in English for 3 days. List 15 words/expressions from the menus with their French meaning.", minChars:150, xp:15, tag:"fut" },
-          ]},
-          4: { title: "Consolidation", exercises: [
-            { id:"e4-1", type:"write", q:"You are a sports journalist. Write a match report (20 lines min) of an imaginary PSG vs Real Madrid CL final. Describe goals, atmosphere, key moments.", minChars:500, xp:25, tag:"foot" },
-            { id:"e4-2", type:"write", q:"Review all vocabulary learned this month. Write 15 sentences using these words correctly.", minChars:300, xp:15 },
-          ]}
+          1: {
+            title: "Conditionals type 1 & 2",
+            exercises: [
+              { id:"e1-1", type:"multi", q:"Complete: 'If Mbappé __ harder, he will score.' ", options:["trains", "would train", "trained", "train"], answer:0, xp:10 },
+              { id:"e1-2", type:"multi", q:"'If I __ a footballer, I would play for Real Madrid.' Which conditional is this?", options:["Type 0", "Type 1", "Type 2", "Type 3"], answer:2, xp:10 },
+              { id:"e1-3", type:"multi", q:"Choose the correct form: 'If it rains, the match __ cancelled.'", options:["will be", "would be", "is", "was"], answer:0, xp:10 },
+              { id:"e1-4", type:"write", q:"Write 6 sentences using Conditional type 1 AND 6 using type 2 about football. Example: 'If PSG wins tonight, they will qualify.'", minChars:300, xp:20, tag:"foot" },
+              { id:"e1-5", type:"write", q:"Go to UEFA.com in English. Find a Champions League article. Write 8 sentences summarizing it. Include the article link.", minChars:250, xp:15, tag:"foot" },
+            ]
+          },
+          2: {
+            title: "Past Perfect & Reported Speech",
+            exercises: [
+              { id:"e2-1", type:"multi", q:"'He said that he __ the match.' (watch) — Choose the correct form:", options:["has watched", "had watched", "watched", "was watching"], answer:1, xp:10 },
+              { id:"e2-2", type:"multi", q:"Direct to reported: 'I scored 3 goals,' he said. →", options:["He said he scored 3 goals", "He said he had scored 3 goals", "He told he scored 3 goals", "He says he had scored"], answer:1, xp:10 },
+              { id:"e2-3", type:"multi", q:"The past perfect is formed with :", options:["had + infinitive", "have + past participle", "had + past participle", "was + past participle"], answer:2, xp:10 },
+              { id:"e2-4", type:"write", q:"Watch a 3-minute match highlights video in English on YouTube. Write 10 sentences about what you understood. Include the video link.", minChars:300, xp:15, tag:"foot" },
+              { id:"e2-5", type:"write", q:"Write a sports journalist report (15 lines min) of an imaginary PSG vs Real Madrid Champions League final. Use past perfect at least 3 times.", minChars:450, xp:25, tag:"foot" },
+            ]
+          },
+          3: {
+            title: "Vocabulary & Reading",
+            exercises: [
+              { id:"e3-1", type:"multi", q:"What does 'offside' mean in football?", options:["A free kick", "A player position that is not allowed", "A type of foul", "A corner kick"], answer:1, xp:10, tag:"foot" },
+              { id:"e3-2", type:"multi", q:"'The goalkeeper made an outstanding ___.' Choose the right word:", options:["score", "save", "goal", "foul"], answer:1, xp:10, tag:"foot" },
+              { id:"e3-3", type:"write", q:"Put FIFA in English for 3 days. List 20 words/expressions from the menus, stats and commentary. Write their French meaning.", minChars:200, xp:15, tag:"fut" },
+              { id:"e3-4", type:"write", q:"Write Mbappé biography in English: 15 lines min. Cover birthplace, clubs, achievements. Use Present Perfect AND Past Simple.", minChars:400, xp:20, tag:"foot" },
+              { id:"e3-5", type:"multi", q:"'He has been playing for Real Madrid since 2024.' What tense is this?", options:["Present perfect", "Present perfect continuous", "Past continuous", "Past perfect"], answer:1, xp:10, tag:"foot" },
+            ]
+          },
+          4: {
+            title: "Writing & Production",
+            exercises: [
+              { id:"e4-1", type:"write", q:"Write a convincing argument (15 lines min): 'Is football the greatest sport in the world?' Give 3 arguments for and 2 against. Use linking words.", minChars:450, xp:25, tag:"foot" },
+              { id:"e4-2", type:"write", q:"Imagine you are a footballer being interviewed after winning the Champions League. Write the full interview (journalist questions + your answers) — 15 exchanges min.", minChars:400, xp:20, tag:"foot" },
+              { id:"e4-3", type:"multi", q:"Which sentence is grammatically correct?", options:["He don't play well today", "He doesn't played well", "He didn't play well today", "He not played well"], answer:2, xp:10 },
+              { id:"e4-4", type:"write", q:"Review all vocabulary you have learned this term. Write 15 original sentences using these words correctly. Each sentence must be about football or sport.", minChars:350, xp:15, tag:"foot" },
+            ]
+          },
         }
       },
       physique: {
-        name: "Physique-Chimie", color: "#CE82FF", icon: "⚗️",
+        name: "Physique-Chimie",
+        color: "#CE82FF",
+        icon: "⚡",
         weeks: {
-          1: { title: "Circuits électriques", exercises: [
-            { id:"p1-1", type:"multi", q:"Dans un circuit en série, si une lampe grille, que se passe-t-il ?", options:["Rien, les autres marchent","Tout le circuit s'éteint","Seule la lampe suivante s'éteint","Le courant augmente"], answer:1, xp:10 },
-            { id:"p1-2", type:"multi", q:"Dans un circuit en dérivation, si une lampe grille ?", options:["Tout s'éteint","Les autres continuent de fonctionner","Le courant s'inverse","Toutes les lampes brillent plus"], answer:1, xp:10 },
-            { id:"p1-3", type:"write", q:"Décris le schéma d'un circuit en série ET d'un circuit en dérivation pour 4 projecteurs de stade. Utilise les symboles normalisés.", minChars:150, xp:15, tag:"foot" },
-          ]},
-          2: { title: "Tension et intensité", exercises: [
-            { id:"p2-1", type:"multi", q:"Quelle est l'unité de la tension électrique ?", options:["Ampère","Volt","Ohm","Watt"], answer:1, xp:10 },
-            { id:"p2-2", type:"multi", q:"Quelle est l'unité de l'intensité du courant ?", options:["Volt","Watt","Ampère","Ohm"], answer:2, xp:10 },
-            { id:"p2-3", type:"write", q:"Reprends 3 exercices corrigés en classe cette semaine. Refais-les ici sans regarder la correction.", minChars:200, xp:10 },
-          ]},
-          3: { title: "Transformations chimiques", exercises: [
-            { id:"p3-1", type:"multi", q:"La photosynthèse est une transformation...", options:["physique","chimique","mécanique","électrique"], answer:1, xp:10 },
-            { id:"p3-2", type:"multi", q:"L'évaporation de l'eau est un changement...", options:["chimique","nucléaire","d'état (physique)","biologique"], answer:2, xp:10 },
-            { id:"p3-3", type:"write", q:"Dans le stade du Bernabéu, trouve 3 exemples de transformations chimiques ET 3 de changements physiques. Explique chacun.", minChars:200, xp:15, tag:"foot" },
-          ]},
-          4: { title: "Révision", exercises: [
-            { id:"p4-1", type:"write", q:"Liste toutes les définitions importantes du trimestre (minimum 8 définitions avec explication).", minChars:250, xp:10 },
-            { id:"p4-2", type:"write", q:"Refais 3 exercices types du trimestre. Écris l'énoncé et ta résolution complète.", minChars:200, xp:15 },
-          ]}
+          1: {
+            title: "Lumière & Couleurs",
+            exercises: [
+              { id:"p1-1", type:"multi", q:"La lumière blanche est composée de :", options:["une seule couleur", "uniquement rouge et bleu", "toutes les couleurs de l'arc-en-ciel", "uniquement jaune et vert"], answer:2, xp:10 },
+              { id:"p1-2", type:"multi", q:"Quand la lumière blanche traverse un prisme, elle se décompose en :", options:["son", "spectre lumineux", "ombre", "réflexion"], answer:1, xp:10 },
+              { id:"p1-3", type:"multi", q:"La vitesse de la lumière dans le vide est approximativement :", options:["300 000 km/s", "150 000 km/s", "30 000 km/s", "3 000 km/s"], answer:0, xp:10 },
+              { id:"p1-4", type:"write", q:"Les maillots de foot sont colorés grâce à des pigments. Explique la différence entre synthèse additive et soustractive des couleurs. Donne 2 exemples concrets.", minChars:200, xp:15, tag:"foot" },
+              { id:"p1-5", type:"multi", q:"Un objet paraît rouge car il :", options:["absorbe toutes les couleurs sauf le rouge", "réfléchit toutes les couleurs", "émet de la lumière rouge", "absorbe le rouge"], answer:0, xp:10 },
+            ]
+          },
+          2: {
+            title: "Son & Propagation",
+            exercises: [
+              { id:"p2-1", type:"multi", q:"Le son se propage :", options:["uniquement dans l'air", "uniquement dans les solides", "dans tous les milieux matériels", "dans le vide"], answer:2, xp:10 },
+              { id:"p2-2", type:"numeric", q:"La vitesse du son dans l'air est 340 m/s. Un tonnerre est entendu 3 secondes après l'éclair. Distance en km ? Arrondi à 0.1", answer:1.0, tolerance:0.05, hint:"340 × 3 = 1020 m = 1.02 km ≈ 1 km", xp:15 },
+              { id:"p2-3", type:"multi", q:"Plus la fréquence d'un son est élevée, plus le son est :", options:["fort", "grave", "aigu", "lent"], answer:2, xp:10 },
+              { id:"p2-4", type:"multi", q:"Le son ne peut pas se propager :", options:["dans l'eau", "dans le vide", "dans l'acier", "dans le bois"], answer:1, xp:10 },
+              { id:"p2-5", type:"write", q:"Dans un stade de foot, explique comment le son des supporters se propage jusqu'aux joueurs sur le terrain. Utilise les notions : milieu de propagation, fréquence, intensité sonore.", minChars:200, xp:15, tag:"foot" },
+            ]
+          },
+          3: {
+            title: "Circuits électriques — Révision",
+            exercises: [
+              { id:"p3-1", type:"multi", q:"Dans un circuit en série, si une lampe grille :", options:["Rien, les autres marchent", "Tout le circuit s'éteint", "Seule la suivante s'éteint", "Le courant augmente"], answer:1, xp:10 },
+              { id:"p3-2", type:"multi", q:"Dans un circuit en dérivation, si une lampe grille :", options:["Tout s'éteint", "Les autres continuent de fonctionner", "Le courant s'inverse", "Toutes brillent plus"], answer:1, xp:10 },
+              { id:"p3-3", type:"multi", q:"L'unité de la tension électrique est :", options:["Ampère", "Volt", "Ohm", "Watt"], answer:1, xp:10 },
+              { id:"p3-4", type:"multi", q:"L'unité de l'intensité du courant est :", options:["Volt", "Watt", "Ampère", "Ohm"], answer:2, xp:10 },
+              { id:"p3-5", type:"write", q:"Décris le schéma d'un circuit en série ET d'un circuit en dérivation pour 4 projecteurs de stade. Utilise les symboles normalisés. Explique l'avantage d'utiliser la dérivation dans un stade.", minChars:200, xp:15, tag:"foot" },
+            ]
+          },
+          4: {
+            title: "Révision générale",
+            exercises: [
+              { id:"p4-1", type:"multi", q:"La photosynthèse est une transformation :", options:["physique", "chimique", "mécanique", "électrique"], answer:1, xp:10 },
+              { id:"p4-2", type:"multi", q:"L'évaporation de l'eau est un changement :", options:["chimique", "nucléaire", "d'état physique", "biologique"], answer:2, xp:10 },
+              { id:"p4-3", type:"write", q:"Dans le stade du Bernabéu : trouve 3 exemples de transformations chimiques ET 3 de changements physiques. Explique chacun en 2 phrases.", minChars:200, xp:15, tag:"foot" },
+              { id:"p4-4", type:"write", q:"Liste toutes les définitions importantes du trimestre (minimum 8 définitions). Pour chacune : le mot, la définition avec tes mots, et un exemple.", minChars:300, xp:15 },
+              { id:"p4-5", type:"write", q:"Refais 2 exercices types de contrôle du trimestre. Écris l'énoncé complet et ta résolution.", minChars:200, xp:15 },
+            ]
+          },
         }
       },
       francais: {
-        name: "Français", color: "#FF9600", icon: "✏️",
+        name: "Français",
+        color: "#FF9600",
+        icon: "📖",
         weeks: {
-          1: { title: "Grammaire & conjugaison", exercises: [
-            { id:"f1-1", type:"multi", q:"Passé simple de 'frapper' (il) ?", options:["il frappait","il frappa","il a frappé","il frapperait"], answer:1, xp:10 },
-            { id:"f1-2", type:"multi", q:"Passé simple de 'courir' (il) ?", options:["il coura","il courit","il courut","il a couru"], answer:2, xp:10 },
-            { id:"f1-3", type:"write", q:"Raconte le dernier match du PSG en LDC au PASSÉ SIMPLE. 10 phrases minimum. Utilise : s'élancer, frapper, plonger, surgir, décocher, intercepter...", minChars:350, xp:20, tag:"foot" },
-          ]},
-          2: { title: "Expression écrite", exercises: [
-            { id:"f2-1", type:"write", q:"Paragraphe argumenté : 'Le football est-il un art ?' Min 15 lignes. 2 arguments pour + 2 contre, avec exemples concrets.", minChars:450, xp:20, tag:"foot" },
-            { id:"f2-2", type:"write", q:"Auto-dictée : relis un paragraphe de ton manuel, ferme-le, réécris-le de mémoire. Indique de quel texte il s'agit.", minChars:150, xp:10 },
-          ]},
-          3: { title: "Vocabulaire & lecture", exercises: [
-            { id:"f3-1", type:"write", q:"5 synonymes de 'rapide' + 5 de 'puissant' + 5 de 'intelligent'. Une phrase d'exemple pour chaque mot. Pour décrire un joueur sans se répéter.", minChars:350, xp:15, tag:"foot" },
-            { id:"f3-2", type:"write", q:"Lis le chapitre en cours en français. Résume en 10 phrases. Identifie 2 figures de style et explique-les.", minChars:300, xp:15 },
-          ]},
-          4: { title: "Consolidation", exercises: [
-            { id:"f4-1", type:"write", q:"Portrait littéraire de Mbappé : décris-le comme un personnage de roman. Métaphores, comparaisons, vocabulaire soutenu. 15 lignes minimum.", minChars:450, xp:25, tag:"foot" },
-            { id:"f4-2", type:"write", q:"Reprends une rédaction rendue ce trimestre. Lis les commentaires du prof. Réécris le passage le moins bien noté, en améliorant.", minChars:200, xp:15 },
-          ]}
+          1: {
+            title: "Grammaire & Conjugaison",
+            exercises: [
+              { id:"f1-1", type:"multi", q:"Passé simple de 'frapper' à la 3ème personne du singulier :", options:["il frappait", "il frappa", "il a frappé", "il frapperait"], answer:1, xp:10 },
+              { id:"f1-2", type:"multi", q:"Le subjonctif présent de 'aller' à la 3ème personne du singulier :", options:["il va", "il aille", "il allait", "il alla"], answer:1, xp:10 },
+              { id:"f1-3", type:"multi", q:"'Bien que le PSG soit favori...' — le mode employé est :", options:["indicatif", "impératif", "subjonctif", "conditionnel"], answer:2, xp:10 },
+              { id:"f1-4", type:"write", q:"Raconte le dernier match du PSG en LDC au PASSÉ SIMPLE. 10 phrases minimum. Utilise : s'élancer, frapper, plonger, surgir, décocher, intercepter.", minChars:350, xp:20, tag:"foot" },
+              { id:"f1-5", type:"write", q:"Conjugue 5 verbes du groupe 3 (choisir, venir, partir, prendre, voir) à toutes les personnes du subjonctif présent. Puis utilise chacun dans une phrase.", minChars:250, xp:15 },
+            ]
+          },
+          2: {
+            title: "Texte argumentatif",
+            exercises: [
+              { id:"f2-1", type:"multi", q:"Le connecteur logique qui introduit une opposition est :", options:["de plus", "en effet", "cependant", "ainsi"], answer:2, xp:10 },
+              { id:"f2-2", type:"multi", q:"Un argument suivi d'un exemple, c'est la structure :", options:["thèse-antithèse", "argument-illustration", "introduction-conclusion", "hypothèse-vérification"], answer:1, xp:10 },
+              { id:"f2-3", type:"write", q:"Paragraphe argumenté : 'Le football est-il un art ?' Min 15 lignes. 2 arguments pour, 2 contre, avec exemples concrets. Respecte la structure : thèse, arguments, exemples, connecteurs logiques.", minChars:500, xp:25, tag:"foot" },
+              { id:"f2-4", type:"write", q:"Auto-dictée : relis un paragraphe de ton manuel (10 lignes min), ferme-le, récris-le de mémoire. Note de quel texte il s'agit et combien d'erreurs tu fais.", minChars:150, xp:10 },
+            ]
+          },
+          3: {
+            title: "Vocabulaire & Lecture",
+            exercises: [
+              { id:"f3-1", type:"write", q:"5 synonymes de 'rapide' — 5 de 'puissant' — 5 de 'intelligent'. Une phrase d'exemple pour chaque mot. Contexte : décrire un joueur de foot sans jamais se répéter.", minChars:400, xp:20, tag:"foot" },
+              { id:"f3-2", type:"multi", q:"'Tel un félin bondissant sur sa proie, Mbappé surgit dans la surface.' Cette figure de style est :", options:["une métaphore", "une comparaison", "une personnification", "une hyperbole"], answer:1, xp:10 },
+              { id:"f3-3", type:"multi", q:"'Sa vitesse était la lumière elle-même.' Cette figure de style est :", options:["une comparaison", "une litote", "une métaphore", "une antithèse"], answer:2, xp:10 },
+              { id:"f3-4", type:"write", q:"Lis le chapitre en cours de votre roman en classe. Résume en 10 phrases. Identifie 2 figures de style, nomme-les et explique leur effet.", minChars:300, xp:15 },
+              { id:"f3-5", type:"write", q:"Portrait littéraire de Mbappé : décris-le comme un personnage de roman. Métaphores, comparaisons, vocabulaire soutenu. 15 lignes minimum. Aucun mot banal.", minChars:450, xp:25, tag:"foot" },
+            ]
+          },
+          4: {
+            title: "Révision & Production",
+            exercises: [
+              { id:"f4-1", type:"write", q:"Reprends une rédaction rendue ce trimestre. Lis les commentaires du prof. Récris le passage le moins bien noté en l'améliorant. Compare les deux versions.", minChars:250, xp:15 },
+              { id:"f4-2", type:"write", q:"Rédige un texte argumentatif complet (introduction, 2 parties avec arguments + exemples, conclusion) sur : 'Les réseaux sociaux sont-ils utiles pour les ados ?' Min 20 lignes.", minChars:600, xp:25 },
+              { id:"f4-3", type:"multi", q:"Dans un texte argumentatif, la concession sert à :", options:["Présenter son avis", "Reconnaître l'argument adverse avant de le réfuter", "Introduire un exemple", "Conclure"], answer:1, xp:10 },
+              { id:"f4-4", type:"write", q:"Fais une fiche de révision de toutes les notions de grammaire du trimestre : modes, temps, figures de style. Min 8 notions avec définition et exemple.", minChars:300, xp:15 },
+            ]
+          },
         }
       },
       histgeo: {
-        name: "Histoire-Géo", color: "#FFC800", icon: "🌍",
+        name: "Histoire-Géo",
+        color: "#FFC800",
+        icon: "🌍",
         weeks: {
-          1: { title: "Cours de la semaine", exercises: [
-            { id:"h1-1", type:"write", q:"Relis ton cours d'histoire. Écris les 3 idées principales, 2-3 phrases chacune. Reformule avec tes mots (pas de copier-coller).", minChars:200, xp:10 },
-          ]},
-          2: { title: "Géographie + LDC", exercises: [
-            { id:"h2-1", type:"write", q:"Prends les 8 équipes des quarts de LDC. Pour chaque ville : le pays, un fait géographique (fleuve, relief, climat), un fait historique.", minChars:300, xp:20, tag:"foot" },
-          ]},
-          3: { title: "Révision active", exercises: [
-            { id:"h3-1", type:"write", q:"Choisis un chapitre d'histoire. Rédige un paragraphe argumenté (10-15 lignes) comme en contrôle. Introduction, développement, conclusion.", minChars:350, xp:15 },
-          ]},
-          4: { title: "Contexte historique", exercises: [
-            { id:"h4-1", type:"write", q:"Real Madrid fondé en 1902, PSG en 1970. Pour chaque date, explique le contexte européen (politique, social, économique). 10 lignes minimum par date.", minChars:400, xp:20, tag:"foot" },
-          ]}
+          1: {
+            title: "La Renaissance & Humanisme",
+            exercises: [
+              { id:"h1-1", type:"multi", q:"La Renaissance est un mouvement culturel qui débute en :", options:["France au XIIIe siècle", "Italie au XVe siècle", "Angleterre au XVIe siècle", "Espagne au XIVe siècle"], answer:1, xp:10 },
+              { id:"h1-2", type:"multi", q:"L'humanisme place au centre de sa réflexion :", options:["Dieu", "la nature", "l'Homme", "le roi"], answer:2, xp:10 },
+              { id:"h1-3", type:"multi", q:"Léonard de Vinci est l'exemple de l'artiste humaniste car il était :", options:["uniquement peintre", "uniquement sculpteur", "peintre, inventeur, scientifique", "uniquement architecte"], answer:2, xp:10 },
+              { id:"h1-4", type:"write", q:"Explique en 10 lignes min ce qu'est la Renaissance. Cite 2 artistes, 2 inventions ou découvertes de cette période. Fais le lien avec la diffusion du savoir grâce à l'imprimerie.", minChars:300, xp:15 },
+              { id:"h1-5", type:"write", q:"Relis ton cours d'histoire sur la Renaissance. Rédige 3 idées principales (2-3 phrases chacune). Reformule avec tes mots — pas de copier-coller.", minChars:200, xp:10 },
+            ]
+          },
+          2: {
+            title: "Réformes religieuses XVIe",
+            exercises: [
+              { id:"h2-1", type:"multi", q:"Martin Luther déclenche la Réforme protestante en :", options:["1492", "1517", "1453", "1598"], answer:1, xp:10 },
+              { id:"h2-2", type:"multi", q:"L'Édit de Nantes (1598) accorde aux protestants français :", options:["la liberté de culte totale", "l'obligation de se convertir", "une relative liberté religieuse", "la persécution"], answer:2, xp:10 },
+              { id:"h2-3", type:"multi", q:"Calvin est associé à la ville de :", options:["Rome", "Paris", "Genève", "Londres"], answer:2, xp:10 },
+              { id:"h2-4", type:"write", q:"Explique en 10 lignes les causes et conséquences de la Réforme protestante. Cite Luther, Calvin et l'impact sur l'Europe du XVIe siècle.", minChars:300, xp:15 },
+              { id:"h2-5", type:"write", q:"Rédige un paragraphe argumenté (10-15 lignes) sur les guerres de Religion en France. Intégre : causes, déroulement, résolution, acteurs clés.", minChars:350, xp:20 },
+            ]
+          },
+          3: {
+            title: "Géo — Risques naturels",
+            exercises: [
+              { id:"h3-1", type:"multi", q:"Un risque naturel devient catastrophe quand :", options:["la nature se dégrade", "il touche des populations humaines", "il se produit la nuit", "il est prévu"], answer:1, xp:10 },
+              { id:"h3-2", type:"multi", q:"Les pays les plus vulnérables aux risques naturels sont généralement :", options:["les pays riches", "les pays développés", "les pays pauvres avec peu de moyens de prévention", "les pays insulaires uniquement"], answer:2, xp:10 },
+              { id:"h3-3", type:"multi", q:"La prévention des risques naturels inclut :", options:["uniquement l'évacuation", "la construction parasismique, les alertes, les plans d'urgence", "l'interdiction de construire partout", "rien, les risques sont imprévisibles"], answer:1, xp:10 },
+              { id:"h3-4", type:"write", q:"Prends 2 exemples de catastrophes naturelles récentes dans le monde. Pour chaque : pays, type de risque, bilan humain, réponse des autorités. Pourquoi les inégalités de développement influencent-elles les bilans ?", minChars:350, xp:20 },
+              { id:"h3-5", type:"write", q:"Les 8 équipes des quarts de LDC 2024. Pour chaque ville : pays, un fait géographique (relief, fleuve, climat) et un fait historique. Min 3 équipes analysées en détail.", minChars:300, xp:20, tag:"foot" },
+            ]
+          },
+          4: {
+            title: "Géo — Développement durable",
+            exercises: [
+              { id:"h4-1", type:"multi", q:"Le développement durable vise à répondre aux besoins du présent :", options:["sans se préoccuper du futur", "sans compromettre les besoins des générations futures", "uniquement dans les pays riches", "en sacrifiant l'environnement"], answer:1, xp:10 },
+              { id:"h4-2", type:"multi", q:"Le réchauffement climatique est principalement causé par :", options:["les éruptions volcaniques", "les activités humaines émettant des gaz à effet de serre", "les marées", "la rotation de la Terre"], answer:1, xp:10 },
+              { id:"h4-3", type:"write", q:"Un stade de foot moderne (ex: Bernabéu rénové) intègre des éléments de développement durable. Cite et explique 4 exemples concrets : énergie, eau, matériaux, mobilité.", minChars:250, xp:15, tag:"foot" },
+              { id:"h4-4", type:"write", q:"Rédige un paragraphe argumenté (10-15 lignes) répondant à : 'Comment concilier développement économique et protection de l'environnement ?' Utilise des exemples réels.", minChars:350, xp:20 },
+            ]
+          },
         }
       },
       svt: {
-        name: "SVT", color: "#58CC02", icon: "🌿",
+        name: "SVT",
+        color: "#58CC02",
+        icon: "🌿",
         weeks: {
-          1: { title: "Cours", exercises: [
-            { id:"s1-1", type:"write", q:"Relis ton cours SVT. Écris les 5 définitions clés avec tes mots + un exemple pour chacune.", minChars:200, xp:10 },
-          ]},
-          2: { title: "Effort physique", exercises: [
-            { id:"s2-1", type:"write", q:"Un footballeur court 10-13 km/match. Quels muscles sont sollicités ? Quels systèmes (respiratoire, circulatoire, musculaire) travaillent et comment ? Détails.", minChars:250, xp:15, tag:"foot" },
-            { id:"s2-2", type:"multi", q:"Pendant un effort intense, la fréquence cardiaque...", options:["diminue","reste stable","augmente","s'arrête"], answer:2, xp:10 },
-          ]},
-          3: { title: "Approfondissement", exercises: [
-            { id:"s3-1", type:"write", q:"Refais un schéma bilan du chapitre en cours. Décris-le : quels éléments, flèches, légendes.", minChars:150, xp:10 },
-          ]},
-          4: { title: "Révision", exercises: [
-            { id:"s4-1", type:"write", q:"Fais un exercice type contrôle du chapitre en cours. Écris l'énoncé ET ta réponse complète.", minChars:200, xp:15 },
-          ]}
+          1: {
+            title: "Écosystèmes & Biodiversité",
+            exercises: [
+              { id:"s1-1", type:"multi", q:"Un écosystème est composé de :", options:["uniquement des êtres vivants", "uniquement du milieu physique", "des êtres vivants et de leur milieu physique", "uniquement des plantes"], answer:2, xp:10 },
+              { id:"s1-2", type:"multi", q:"La biodiversité désigne :", options:["uniquement les espèces animales", "la variété du vivant à tous les niveaux", "uniquement les plantes en forêt", "le nombre de pays dans le monde"], answer:1, xp:10 },
+              { id:"s1-3", type:"write", q:"Un footballeur professionnel peut jouer dans plusieurs pays. Explique comment les humains peuvent menacer la biodiversité en utilisant 3 exemples concrets : déforestation, pollution, espèces invasives.", minChars:250, xp:15, tag:"foot" },
+              { id:"s1-4", type:"multi", q:"Dans une chaîne alimentaire, le producteur est :", options:["un animal carnivore", "un animal herbivore", "un végétal", "un champignon"], answer:2, xp:10 },
+              { id:"s1-5", type:"write", q:"Construis une chaîne alimentaire de 4 éléments liée à un écosystème de prairie. Explique le rôle de chaque maillon et ce qui se passerait si l'un disparaissait.", minChars:200, xp:15 },
+            ]
+          },
+          2: {
+            title: "Reproduction & Génétique",
+            exercises: [
+              { id:"s2-1", type:"multi", q:"La reproduction sexuée implique :", options:["un seul individu", "deux individus et la fusion de cellules reproductrices", "un seul individu se divisant", "des cellules identiques à la mère"], answer:1, xp:10 },
+              { id:"s2-2", type:"multi", q:"Un chromosome est constitué de :", options:["protéines uniquement", "ARN", "ADN", "lipides"], answer:2, xp:10 },
+              { id:"s2-3", type:"numeric", q:"Une cellule humaine contient 46 chromosomes. Combien de paires de chromosomes cela représente-t-il ?", answer:23, tolerance:0, hint:"46 ÷ 2 = 23 paires", xp:10 },
+              { id:"s2-4", type:"multi", q:"Lors de la fécondation, la cellule-oeuf (zygote) contient :", options:["23 chromosomes", "46 chromosomes", "92 chromosomes", "24 chromosomes"], answer:1, xp:10 },
+              { id:"s2-5", type:"write", q:"Explique la différence entre reproduction sexuée et asexuée. Donne 2 exemples de chaque. Quel est l'avantage de la reproduction sexuée pour la biodiversité ?", minChars:250, xp:15 },
+            ]
+          },
+          3: {
+            title: "Corps humain & Effort physique",
+            exercises: [
+              { id:"s3-1", type:"multi", q:"Pendant un effort intense, la fréquence cardiaque :", options:["diminue", "reste stable", "augmente", "s'arrête"], answer:2, xp:10 },
+              { id:"s3-2", type:"multi", q:"Le muscle utilise en priorité comme source d'énergie :", options:["les lipides", "le glucose", "les protéines", "l'eau"], answer:1, xp:10 },
+              { id:"s3-3", type:"write", q:"Un footballeur court 10-12 km par match. Décris précisément quels systèmes travaillent (musculaire, respiratoire, circulatoire, nerveux) et comment ils s'adaptent à l'effort. Min 15 lignes.", minChars:350, xp:20, tag:"foot" },
+              { id:"s3-4", type:"multi", q:"L'acide lactique est produit par les muscles lors :", options:["d'un effort modéré de longue durée", "d'un effort intense avec manque d'oxygène", "du repos", "de la digestion"], answer:1, xp:10 },
+              { id:"s3-5", type:"write", q:"Décris les adaptations du corps d'un footballeur professionnel entraîné vs un sédentaire : fréquence cardiaque au repos, capacité pulmonaire, masse musculaire. Explique pourquoi ces différences existent.", minChars:250, xp:15, tag:"foot" },
+            ]
+          },
+          4: {
+            title: "Révision",
+            exercises: [
+              { id:"s4-1", type:"write", q:"Refais un schéma-bilan du chapitre en cours : décris tous les éléments, flèches, légendes. Explique comment les parties s'articulent. Min 150 caractères de description.", minChars:150, xp:10 },
+              { id:"s4-2", type:"write", q:"Fais un exercice type contrôle sur un chapitre du trimestre. Écris l'énoncé que tu inventes ET ta réponse complète avec les mots-clés du cours.", minChars:200, xp:15 },
+              { id:"s4-3", type:"write", q:"Rédige une fiche de révision complète du trimestre SVT : 6 définitions clés, 2 schémas décrits, 3 notions importantes. Max de précision avec tes propres mots.", minChars:300, xp:15 },
+            ]
+          },
         }
-      }
+      },
+      espagnol: {
+        name: "Espagnol",
+        color: "#C60B1E",
+        icon: "🇪🇸",
+        weeks: {
+          1: {
+            title: "Vocabulaire — Fútbol",
+            exercises: [
+              { id:"es1-1", type:"multi", q:"Comment dit-on 'gardien de but' en espagnol ?", options:["delantero", "portero", "centrocampista", "defensa"], answer:1, xp:10, tag:"foot" },
+              { id:"es1-2", type:"multi", q:"'Marcar un gol' signifie :", options:["rater un but", "faire une faute", "marquer un but", "faire une passe"], answer:2, xp:10, tag:"foot" },
+              { id:"es1-3", type:"multi", q:"Comment dit-on 'équipe' en espagnol ?", options:["juego", "equipo", "campo", "partido"], answer:1, xp:10, tag:"foot" },
+              { id:"es1-4", type:"write", q:"Présente ton joueur de foot préféré en espagnol : nom, nationalité, club, âge, qualités. 8 phrases minimum. Utilise des adjectifs variés.", minChars:200, xp:15, tag:"foot" },
+              { id:"es1-5", type:"multi", q:"Comment dit-on 'entraînement' en espagnol ?", options:["partido", "entrenamiento", "campeonato", "vestuario"], answer:1, xp:10, tag:"foot" },
+              { id:"es1-6", type:"write", q:"Écris 10 phrases en espagnol décrivant un match de foot imaginaire. Utilise le vocabulaire : gol, portero, equipo, campo, jugador, partido, entrenador, árbitro.", minChars:200, xp:15, tag:"foot" },
+            ]
+          },
+          2: {
+            title: "Grammaire — Présent & Passé",
+            exercises: [
+              { id:"es2-1", type:"multi", q:"Conjugaison de 'jugar' (jouer) à la 3ème personne singulier présent :", options:["juga", "juega", "jugea", "juge"], answer:1, xp:10 },
+              { id:"es2-2", type:"multi", q:"'Mbappé ha marcado 3 goles.' Quel temps est utilisé ?", options:["Présent", "Pretérito indefinido", "Pretérito perfecto", "Futuro"], answer:2, xp:10 },
+              { id:"es2-3", type:"multi", q:"Comment dit-on 'hier' en espagnol ?", options:["mañana", "hoy", "ayer", "ahora"], answer:2, xp:10 },
+              { id:"es2-4", type:"write", q:"Conjugue les verbes 'hablar', 'comer', 'vivir' à toutes les personnes du présent. Puis écris 3 phrases avec chaque verbe sur le thème du sport.", minChars:250, xp:15 },
+              { id:"es2-5", type:"write", q:"Raconte en espagnol le dernier match de foot que tu as regardé : score, joueurs, actions clés. 10 phrases minimum au passé (pretérito perfecto ou indefinido).", minChars:200, xp:15, tag:"foot" },
+            ]
+          },
+          3: {
+            title: "Culture hispanique & Football",
+            exercises: [
+              { id:"es3-1", type:"multi", q:"Combien de fois le Real Madrid a-t-il gagné la Ligue des Champions ? (jusqu'en 2024)", options:["10", "12", "15", "14"], answer:3, xp:10, tag:"foot" },
+              { id:"es3-2", type:"multi", q:"Le Bernabéu est le stade de quelle ville ?", options:["Barcelone", "Séville", "Madrid", "Valence"], answer:2, xp:10, tag:"foot" },
+              { id:"es3-3", type:"multi", q:"La Selección espagnole a gagné combien de Coupes du Monde ?", options:["1", "2", "3", "0"], answer:0, xp:10 },
+              { id:"es3-4", type:"write", q:"Présente le Real Madrid ou le FC Barcelone en espagnol : fondation, stade, palmarès, joueurs emblématiques. 10 phrases minimum.", minChars:250, xp:15, tag:"foot" },
+              { id:"es3-5", type:"write", q:"Va sur le site officiel du Real Madrid ou du Barça (en espagnol). Note 15 mots ou expressions que tu ne connaissais pas. Donne leur traduction et une phrase exemple.", minChars:200, xp:15, tag:"foot" },
+            ]
+          },
+          4: {
+            title: "Expression écrite",
+            exercises: [
+              { id:"es4-1", type:"write", q:"Écris une lettre en espagnol à ton joueur préféré : qui tu es, pourquoi tu l'admires, une question que tu lui poserais. 12 phrases minimum. Commence par 'Querido/a...'", minChars:300, xp:20, tag:"foot" },
+              { id:"es4-2", type:"multi", q:"Comment dit-on 'je m'appelle' en espagnol ?", options:["me llamas", "me llamo", "me llaman", "te llamas"], answer:1, xp:10 },
+              { id:"es4-3", type:"write", q:"Décris ta routine de la journée en espagnol au présent : lever, école, sport, repas, coucher. 10 phrases minimum. Utilise des expressions de temps : por la mañana, por la tarde, por la noche.", minChars:200, xp:15 },
+              { id:"es4-4", type:"write", q:"Révision finale : liste 30 mots de vocabulaire espagnol que tu as appris ce trimestre avec leur traduction. Puis écris 5 phrases originales en utilisant des mots de cette liste.", minChars:300, xp:15 },
+            ]
+          },
+        }
+      },
+      techno: {
+        name: "Technologie",
+        color: "#4A90D9",
+        icon: "⚙️",
+        weeks: {
+          1: {
+            title: "Systèmes techniques",
+            exercises: [
+              { id:"te1-1", type:"multi", q:"Un système technique est défini par :", options:["sa couleur", "sa fonction d'usage (ce à quoi il sert)", "son prix", "sa taille"], answer:1, xp:10 },
+              { id:"te1-2", type:"multi", q:"Dans un système technique, on distingue : l'énergie d'entrée, la fonction, et :", options:["la couleur de sortie", "l'énergie de sortie", "le fournisseur", "le manuel"], answer:1, xp:10 },
+              { id:"te1-3", type:"multi", q:"Un smartphone transforme l'énergie électrique en :", options:["énergie mécanique uniquement", "énergie lumineuse, sonore et thermique", "énergie chimique", "énergie nucléaire"], answer:1, xp:10 },
+              { id:"te1-4", type:"write", q:"Analyse le système technique d'un but de football : décompose-le en sous-systèmes (poteaux, filet, ferrure). Pour chaque : matériau utilisé, fonction, contraintes. Min 10 lignes.", minChars:250, xp:15, tag:"foot" },
+              { id:"te1-5", type:"write", q:"Choisis un objet technique du quotidien (vélo, four, machine à laver). Décris ses énergies d'entrée et de sortie, ses fonctions principales et les matériaux qui le composent.", minChars:200, xp:15 },
+            ]
+          },
+          2: {
+            title: "Programmation & Algorithmes",
+            exercises: [
+              { id:"te2-1", type:"multi", q:"Un algorithme est :", options:["un langage de programmation", "une suite d'instructions pour résoudre un problème", "un type d'ordinateur", "un logiciel de dessin"], answer:1, xp:10 },
+              { id:"te2-2", type:"multi", q:"Une boucle en programmation sert à :", options:["afficher du texte une seule fois", "répéter une série d'instructions", "créer des variables", "stopper le programme"], answer:1, xp:10 },
+              { id:"te2-3", type:"numeric", q:"Un programme démarre compteur = 0. Il fait une boucle 5 fois : à chaque fois il ajoute 3 au compteur. Quelle est la valeur finale du compteur ?", answer:15, tolerance:0, hint:"5 × 3 = 15", xp:10 },
+              { id:"te2-4", type:"multi", q:"Une instruction conditionnelle 'si...alors...sinon' sert à :", options:["répéter une action", "prendre une décision selon une condition", "déclarer une variable", "afficher un résultat"], answer:1, xp:10 },
+              { id:"te2-5", type:"write", q:"Écris en français l'algorithme pour calculer la moyenne de 5 notes. Puis l'algorithme pour savoir si un score de foot est une victoire, défaite ou nul. Utilise si/alors/sinon.", minChars:200, xp:15, tag:"foot" },
+              { id:"te2-6", type:"write", q:"Avec Scratch ou un autre outil de programmation vu en cours, décris un mini-projet que tu pourrais réaliser sur le thème du sport. Détaille les étapes de programmation nécessaires.", minChars:200, xp:15, tag:"foot" },
+            ]
+          },
+          3: {
+            title: "Matériaux & Fabrication",
+            exercises: [
+              { id:"te3-1", type:"multi", q:"Le carbone (fibre de carbone) est utilisé dans les équipements sportifs car il est :", options:["lourd et fragile", "léger et résistant", "rigide uniquement", "pas cher"], answer:1, xp:10 },
+              { id:"te3-2", type:"multi", q:"Quel procédé permet de mettre en forme le plastique par chauffage et pression dans un moule ?", options:["soudage", "moulage par injection", "usinage", "pliage"], answer:1, xp:10 },
+              { id:"te3-3", type:"multi", q:"Un maillot de foot moderne est généralement fabriqué en :", options:["coton naturel uniquement", "polyester synthétique recyclé", "laine", "soie"], answer:1, xp:10, tag:"foot" },
+              { id:"te3-4", type:"write", q:"Compare 3 matériaux utilisés dans l'équipement de foot (crampon, maillot, ballon) : matériau utilisé, ses propriétés (résistance, légèreté, souplesse), pourquoi ce choix pour cet usage.", minChars:250, xp:15, tag:"foot" },
+              { id:"te3-5", type:"write", q:"Choisis un objet fabriqué en cours de techno. Décris les étapes de fabrication, les outils utilisés, les matériaux et les contraintes techniques rencontrées.", minChars:200, xp:15 },
+            ]
+          },
+          4: {
+            title: "Énergie & Développement durable",
+            exercises: [
+              { id:"te4-1", type:"multi", q:"L'énergie cinétique d'un ballon de foot dépend de :", options:["sa couleur", "sa vitesse et sa masse", "uniquement sa masse", "uniquement sa couleur"], answer:1, xp:10, tag:"foot" },
+              { id:"te4-2", type:"multi", q:"L'énergie renouvelable est une énergie :", options:["qui pollue beaucoup", "qui ne se renouvelle pas", "qui se renouvelle naturellement", "stockée dans le pétrole"], answer:2, xp:10 },
+              { id:"te4-3", type:"multi", q:"Lors d'un tir de Mbappé, l'énergie musculaire se transforme en :", options:["énergie électrique", "énergie cinétique du ballon", "énergie nucléaire", "énergie chimique"], answer:1, xp:10, tag:"foot" },
+              { id:"te4-4", type:"write", q:"Un stade de foot moderne intègre des solutions durables. Cite et explique 4 exemples (panneaux solaires, récupération eau de pluie, LED, mobilité douce). Explique les conversions d'énergie impliquées.", minChars:250, xp:15, tag:"foot" },
+              { id:"te4-5", type:"write", q:"Explique toutes les conversions d'énergie lors d'un penalty : depuis la contraction musculaire du joueur jusqu'au filet qui bouge. Sois précis sur les types d'énergie à chaque étape.", minChars:200, xp:15, tag:"foot" },
+            ]
+          },
+        }
+      },
     };
 
     const RANKS = [
@@ -200,8 +435,8 @@
       { name:"Quart de Finale 🎯", xp:550,  desc:"Les 8 meilleurs ! Tu es dans l'élite du tournoi." },
       { name:"Demi-Finale 🔥",     xp:850,  desc:"Plus que 4 équipes ! Tu touches la finale du doigt." },
       { name:"Finale 💥",          xp:1200, desc:"LA Finale ! Donne tout ce que tu as !" },
-      { name:"Champion 🏆",        xp:1700, desc:"CHAMPION ! Tu as soulevé le trophée !" },
-      { name:"Légende du Foot 👑", xp:2300, desc:"Ballon d'Or. Légende absolue. Il n'y a plus rien au-dessus." }
+      { name:"Champion 🏆",        xp:1500, desc:"CHAMPION ! Tu as soulevé le trophée !" },
+      { name:"Légende du Foot 👑", xp:2000, desc:"Ballon d'Or. Légende absolue. Il n'y a plus rien au-dessus." }
     ];
 
 
@@ -221,12 +456,12 @@
           "🎮 Abonnement FIFA Ultimate Team ou carte cadeau gaming"
         ]
       },
-      { id:"champion",rank:"Champion 🏆",          xp:1700, options:[
+      { id:"champion",rank:"Champion 🏆",          xp:1500, options:[
           "🏟️ Billet pour un vrai match de Ligue des Champions",
           "🎮 Console / upgrade gaming (manette pro, casque…)"
         ]
       },
-      { id:"legende", rank:"Légende du Foot 👑",   xp:2300, options:["✈️ Séjour football : stage académie, city trip + match live"] }
+      { id:"legende", rank:"Légende du Foot 👑",   xp:2000, options:["✈️ Séjour football : stage académie, city trip + match live"] }
     ];
 
     const STORAGE_KEY = "aydann-study-v5";
