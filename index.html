@@ -466,7 +466,8 @@
 
     const STORAGE_KEY = "aydann-study-v5";
     const PARENT_CODE = "9999";
-    const INIT = { answers:{}, xp:0, streak:0, lastDate:null, theme:"light", rewards:{} };
+    const INIT = { answers:{}, xp:0, streak:0, lastDate:null, theme:"light", rewards:{}, postponed:{} };
+    const MAX_POSTPONED = 5;
 
     // ── Supabase config — remplace YOUR_URL et YOUR_ANON_KEY ──────────
     const SUPA_URL  = "https://hdkprppxbzgjlryvgofa.supabase.co";
@@ -575,6 +576,44 @@
     // APP
     // ═══════════════════════════════════════════════════════
 
+    const RIVALS = {
+      maths:    { 1:{name:"Éric Cantona",    flag:"🇫🇷",tier:1,quote:"Tu crois pouvoir battre le King ?"},
+                  2:{name:"Thierry Henry",    flag:"🇫🇷",tier:2,quote:"Le meilleur buteur d'Arsenal te défie !"},
+                  3:{name:"Zinedine Zidane",  flag:"🇫🇷",tier:3,quote:"La Coupe du Monde 98, c'était moi. Et toi ?"},
+                  4:{name:"Kylian Mbappé",    flag:"🇫🇷",tier:4,quote:"Prouve que tu mérites de jouer avec moi 🔥"} },
+      anglais:  { 1:{name:"David Beckham",   flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",tier:1,quote:"Style et précision — es-tu à la hauteur ?"},
+                  2:{name:"Steven Gerrard",   flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",tier:2,quote:"Je n'ai jamais abandonné. Toi ?"},
+                  3:{name:"Wayne Rooney",     flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",tier:3,quote:"256 buts en Premier League — montre ce que tu vaux !"},
+                  4:{name:"Bobby Charlton",   flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",tier:4,quote:"J'ai soulevé la Coupe du Monde. Relève ce défi !"} },
+      physique: { 1:{name:"Luka Modrić",     flag:"🇭🇷",tier:1,quote:"Toujours précis, toujours là. Comme en physique !"},
+                  2:{name:"Roberto Baggio",   flag:"🇮🇹",tier:2,quote:"Même mes erreurs sont légendaires. Et toi ?"},
+                  3:{name:"Marco van Basten", flag:"🇳🇱",tier:3,quote:"3 Ballons d'Or. Maîtrise les lois de la physique !"},
+                  4:{name:"Ronaldo R9",       flag:"🇧🇷",tier:4,quote:"La vitesse de la lumière ? Presque comme moi en 2002 ⚡"} },
+      francais: { 1:{name:"Michel Platini",  flag:"🇫🇷",tier:1,quote:"3 Ballons d'Or consécutifs. Tu as le niveau ?"},
+                  2:{name:"Patrick Vieira",   flag:"🇫🇷",tier:2,quote:"Je n'ai jamais lâché le ballon. Ni toi ton stylo !"},
+                  3:{name:"Zinedine Zidane",  flag:"🇫🇷",tier:3,quote:"J'exprimais tout avec le ballon. Toi avec les mots !"},
+                  4:{name:"Kylian Mbappé",    flag:"🇫🇷",tier:4,quote:"Je lisais beaucoup pour m'améliorer. À toi ! 📚"} },
+      histgeo:  { 1:{name:"Carlos Valderrama",flag:"🇨🇴",tier:1,quote:"Mon pays, ma fierté. Connais-tu l'Histoire ?"},
+                  2:{name:"George Weah",      flag:"🇱🇷",tier:2,quote:"De Ballon d'Or à Président. L'Histoire, c'est moi !"},
+                  3:{name:"Johan Cruyff",     flag:"🇳🇱",tier:3,quote:"J'ai révolutionné le jeu. Révolutionne ta géo !"},
+                  4:{name:"Diego Maradona",   flag:"🇦🇷",tier:4,quote:"La Main de Dieu en 86. L'Histoire t'attend !"} },
+      svt:      { 1:{name:"Xabi Alonso",      flag:"🇪🇸",tier:1,quote:"Précision scientifique sur le terrain. Et toi en SVT ?"},
+                  2:{name:"Samuel Eto'o",      flag:"🇨🇲",tier:2,quote:"4 Coupes d'Afrique. La nature, je la connais !"},
+                  3:{name:"Ronaldinho",        flag:"🇧🇷",tier:3,quote:"Sourire et talent. La SVT aussi peut être magique !"},
+                  4:{name:"Pelé",              flag:"🇧🇷",tier:4,quote:"1283 buts officiels. La science de marquer, c'est moi !"} },
+      espagnol: { 1:{name:"Andrés Iniesta",   flag:"🇪🇸",tier:1,quote:"¡Hola! Je parle espagnol couramment 😄 Et toi ?"},
+                  2:{name:"Raúl González",     flag:"🇪🇸",tier:2,quote:"¡Aquí el Real Madrid no pierde! Démontre ton niveau !"},
+                  3:{name:"Fernando Torres",   flag:"🇪🇸",tier:3,quote:"Campeón del Mundo 2010 ! ¿Puedes ganarme ?"},
+                  4:{name:"Lionel Messi",      flag:"🇦🇷",tier:4,quote:"¡Vamos! El mejor del mundo te desafía 🐐"} },
+      techno:   { 1:{name:"Philipp Lahm",     flag:"🇩🇪",tier:1,quote:"Technique + intelligence. Comme en technologie !"},
+                  2:{name:"Oliver Kahn",       flag:"🇩🇪",tier:2,quote:"Réflexes d'acier. Les systèmes techniques aussi !"},
+                  3:{name:"Franz Beckenbauer", flag:"🇩🇪",tier:3,quote:"Der Kaiser a tout inventé. La techno aussi !"},
+                  4:{name:"Cristiano Ronaldo", flag:"🇵🇹",tier:4,quote:"Mon corps est une machine parfaite. Comprends-la 💪"} },
+    };
+    const TIER_COLORS = ["","#58CC02","#FFC800","#CE82FF","#FF4B4B"];
+    const TIER_LABELS = ["","⭐ Bon joueur","⭐⭐ Grand joueur","⭐⭐⭐ Légende","⭐⭐⭐⭐ GOAT"];
+
+
     function RewardsView({ T, data, setData }) {
       const xp = data.xp || 0;
       const rewards = data.rewards || {};
@@ -663,6 +702,53 @@
               </div>
             );
           })}
+        </div>
+      );
+    }
+
+
+    function RivalBanner({ T, rival, matchPct, matchDone }) {
+      const tc = TIER_COLORS[rival.tier] || "#1CB0F6";
+      return (
+        <div style={{ background: matchDone ? "#58CC0215" : tc+"15", border:`2px solid ${matchDone?"#58CC02":tc}`, borderBottomWidth:5, borderRadius:20, padding:"14px 16px", marginBottom:20 }}>
+          {/* Tier badge */}
+          <div style={{ textAlign:"center", marginBottom:8 }}>
+            <span style={{ background:tc+"25", border:`1.5px solid ${tc}`, borderRadius:10, padding:"3px 10px", fontSize:12, fontWeight:800, color:tc }}>
+              {TIER_LABELS[rival.tier]}
+            </span>
+          </div>
+          {/* VS banner */}
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <div style={{ flex:1, textAlign:"center" }}>
+              <div style={{ fontSize:36 }}>⚽</div>
+              <div style={{ fontWeight:900, fontSize:15, color:T.tx }}>Aydann</div>
+              <div style={{ fontSize:11, color:T.mt, fontWeight:700 }}>TOI</div>
+            </div>
+            <div style={{ background:T.sf, border:`2px solid ${T.bd}`, borderRadius:14, padding:"8px 12px", fontWeight:900, fontSize:22, color:T.mt }}>VS</div>
+            <div style={{ flex:1, textAlign:"center" }}>
+              <div style={{ fontSize:36 }}>{rival.flag}</div>
+              <div style={{ fontWeight:900, fontSize:14, color:T.tx }}>{rival.name}</div>
+              <div style={{ fontSize:11, color:T.mt, fontWeight:700 }}>ADVERSAIRE</div>
+            </div>
+          </div>
+          {/* Quote */}
+          <div style={{ background:T.bg, borderRadius:12, padding:"8px 12px", marginTop:10, fontSize:13, fontStyle:"italic", color:T.mt, textAlign:"center", lineHeight:1.4 }}>
+            « {rival.quote} »
+          </div>
+          {/* Progress bar */}
+          <div style={{ marginTop:10 }}>
+            <div style={{ height:10, background:T.bd, borderRadius:5, overflow:"hidden" }}>
+              <div style={{ height:"100%", width:`${matchPct}%`, background: matchDone ? "#58CC02" : tc, borderRadius:5, transition:"width 0.6s ease" }} />
+            </div>
+            <div style={{ fontSize:13, fontWeight:800, color: matchDone ? "#58CC02" : T.mt, marginTop:6, textAlign:"center" }}>
+              {matchDone
+                ? `🏆 Victoire ! Tu as battu ${rival.name} !`
+                : matchPct > 0
+                  ? `${matchPct}% — encore ${100-matchPct}% pour battre ${rival.name.split(" ")[0]} !`
+                  : `Relève le défi — bats ${rival.name.split(" ")[0]} !`
+              }
+            </div>
+          </div>
         </div>
       );
     }
@@ -1174,6 +1260,16 @@
                   <div style={{ fontSize:26 }}>{sub.icon}</div>
                   <div style={{ fontSize:22, fontWeight:900 }}>{weekData.title}</div>
                 </div>
+
+                {/* ── Rival Banner ── */}
+                {RIVALS[subId]?.[weekN] && (() => {
+                  const rival = RIVALS[subId][weekN];
+                  const wd = weekDone(subId, weekN);
+                  const matchPct = wd.total ? Math.round(wd.done / wd.total * 100) : 0;
+                  const matchDone = wd.done === wd.total && wd.total > 0;
+                  return <RivalBanner T={T} rival={rival} matchPct={matchPct} matchDone={matchDone} />;
+                })()}
+
                 {weekData.exercises.map((ex, idx) => {
                   const ans = data.answers[ex.id];
                   const status = ans?.status;
@@ -1263,6 +1359,19 @@
                   <div style={{ marginTop:28 }}>
                     {(!feedback||feedback.type==="error") && <button className="push" onClick={submitAnswer} style={btn(sub.color)}>{currentEx.type==="write"?"Envoyer ! 📤":"Vérifier ! ✓"}</button>}
                     {(feedback?.type==="success"||feedback?.type==="pending") && <button className="push" onClick={goNext} style={btn(T.ok)}>Continuer <span style={{ fontSize:18 }}>→</span></button>}
+                    {(!feedback||feedback.type==="error") && currentEx && !data.answers[currentEx.id] && (() => {
+                      const postponed = data.postponed || {};
+                      const already = postponed[currentEx.id];
+                      const activeCount = Object.values(postponed).filter(p=>p.status==="postponed").length;
+                      const atLimit = activeCount >= MAX_POSTPONED;
+                      if (already) return null;
+                      return <div style={{ marginTop:8, textAlign:"center" }}>
+                        <button onClick={()=>{ if(atLimit) return; setData(p=>({...p,postponed:{...p.postponed,[currentEx.id]:{status:"postponed",date:new Date().toISOString()}}})); goNext(); }}
+                          style={{ background:atLimit?T.bd:"#FFC80018", border:`1.5px solid ${atLimit?T.bd:"#FFC800"}`, borderRadius:14, padding:"9px 18px", color:atLimit?T.mt:"#FFC800", fontWeight:800, fontSize:13, cursor:atLimit?"not-allowed":"pointer", width:"100%" }}>
+                          {atLimit ? "🔒 Limite 5 matchs reportés atteinte — complètes-en un d'abord" : `📅 Pas encore vu en classe — Reporter (${activeCount}/${MAX_POSTPONED})`}
+                        </button>
+                      </div>;
+                    })()}
                   </div>
                 )}
               </div>
