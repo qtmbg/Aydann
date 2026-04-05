@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aydann Champions Work ⚽</title>
+  <meta name="description" content="Application de révision scolaire gamifiée pour Aydann" />
+  <meta name="theme-color" content="#1CB0F6" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { min-height: 100%; background: #F2F6FA; font-family: 'Nunito', sans-serif; }
+    #root { min-height: 100vh; }
+    ::-webkit-scrollbar { display: none; }
+    /* Splash loading avant React */
+    #pre-splash {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #1CB0F6;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+    #pre-splash .ball { font-size: 80px; animation: preBounce 0.7s ease-in-out infinite alternate; }
+    #pre-splash .title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 28px; color: #fff; margin-top: 16px; text-shadow: 0 4px 0 rgba(0,0,0,0.15); }
+    #pre-splash .dots { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 12px; letter-spacing: 8px; animation: dotPulse 1s ease-in-out infinite; }
+    @keyframes preBounce { from { transform: translateY(0); } to { transform: translateY(-24px) rotate(15deg); } }
+    @keyframes dotPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <!-- Splash affiché AVANT le chargement React -->
+  <div id="pre-splash">
+    <div class="ball">⚽</div>
+    <div class="title">Aydann Champions Work</div>
+    <div class="dots">• • •</div>
+  </div>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ═══════════════════════════════════════════════════════
+    // EXERCICE BANK
+    // ═══════════════════════════════════════════════════════
+    const EXERCISES = {
+      maths: {
+        name: "Maths", color: "#FF4B4B", icon: "➕",
+        weeks: {
+          1: { title: "Proportionnalité", exercises: [
+            { id:"m1-1", type:"numeric", q:"Mbappé a 97 de vitesse sur un max de 99. Quel pourcentage ? (arrondi à 0.1)", answer:98.0, tolerance:0.1, hint:"Divise 97 par 99 × 100", xp:15, tag:"fut" },
+            { id:"m1-2", type:"numeric", q:"Le PSG marque 2.4 buts/match en moyenne. Combien sur 38 journées ?", answer:91.2, tolerance:0.1, hint:"2.4 × 38", xp:10, tag:"foot" },
+            { id:"m1-3", type:"numeric", q:"Le Real marque 2.1 buts/match. Combien sur 38 journées ?", answer:79.8, tolerance:0.1, hint:"2.1 × 38", xp:10, tag:"foot" },
+            { id:"m1-4", type:"numeric", q:"Une carte FUT à 80 000 crédits perd 15%. Nouveau prix ?", answer:68000, tolerance:0, hint:"80000 − (80000 × 15/100)", xp:15, tag:"fut" },
+            { id:"m1-5", type:"numeric", q:"Échelle 1/50000 : 6 cm sur la carte = combien de km réels ?", answer:3, tolerance:0, hint:"6 × 50000 = 300000 cm = 3 km", xp:10 },
+            { id:"m1-6", type:"write", q:"Ouvre ton manuel, fais les exercices sur la proportionnalité. Écris les numéros et tes réponses.", minChars:100, xp:10 },
+          ]},
+          2: { title: "Pourcentages", exercises: [
+            { id:"m2-1", type:"numeric", q:"Une carte FUT à 50 000 crédits baisse de 20%. Nouveau prix ?", answer:40000, tolerance:0, hint:"50000 × 0.80", xp:15, tag:"fut" },
+            { id:"m2-2", type:"numeric", q:"Cette carte à 40 000 remonte de 15%. Prix final ?", answer:46000, tolerance:0, hint:"40000 × 1.15", xp:15, tag:"fut" },
+            { id:"m2-3", type:"numeric", q:"On a perdu combien par rapport au prix initial de 50 000 ?", answer:4000, tolerance:0, hint:"50000 − 46000", xp:10, tag:"fut" },
+            { id:"m2-4", type:"numeric", q:"Le Real : 62% de possession sur 90 min. Combien de minutes ? (arrondi 0.1)", answer:55.8, tolerance:0.1, hint:"90 × 62 / 100", xp:15, tag:"foot" },
+            { id:"m2-5", type:"numeric", q:"Le PSG : 58% de possession sur 90 min. Combien de minutes ?", answer:52.2, tolerance:0.1, hint:"90 × 58 / 100", xp:10, tag:"foot" },
+            { id:"m2-6", type:"numeric", q:"Le Barça : 67% de possession. Minutes avec le ballon ? (arrondi 0.1)", answer:60.3, tolerance:0.1, xp:10, tag:"foot" },
+          ]},
+          3: { title: "Calcul littéral", exercises: [
+            { id:"m3-1", type:"numeric", q:"FIFA : Note = (vitesse+tir+passe+dribble+défense+physique)/6. Mbappé : 97+93+80+92+36+78. Quelle note ? (arrondi 0.1)", answer:79.3, tolerance:0.2, hint:"476 ÷ 6", xp:15, tag:"fut" },
+            { id:"m3-2", type:"numeric", q:"Si x = 5, calcule : 3x + 7", answer:22, tolerance:0, hint:"3×5 + 7", xp:10 },
+            { id:"m3-3", type:"numeric", q:"Développe et calcule pour x=3 : 2(x + 4)", answer:14, tolerance:0, hint:"2x + 8 = 6 + 8", xp:10 },
+            { id:"m3-4", type:"numeric", q:"Réduis : 5x + 3 + 2x − 1. Donne le coefficient de x.", answer:7, tolerance:0, hint:"5x + 2x = 7x", xp:10 },
+            { id:"m3-5", type:"write", q:"Choisis 3 joueurs FUT. Pour chacun, écris les 6 stats et calcule la note moyenne. Montre tes calculs.", minChars:150, xp:15, tag:"fut" },
+          ]},
+          4: { title: "Statistiques & Géométrie", exercises: [
+            { id:"m4-1", type:"numeric", q:"Terrain de foot 105m × 68m. Périmètre en mètres ?", answer:346, tolerance:0, hint:"2 × (105 + 68)", xp:10, tag:"foot" },
+            { id:"m4-2", type:"numeric", q:"Aire du terrain en m² ?", answer:7140, tolerance:0, hint:"105 × 68", xp:10, tag:"foot" },
+            { id:"m4-3", type:"numeric", q:"Surface de réparation : 40.32m × 16.5m. Aire en m² ? (arrondi 0.1)", answer:665.3, tolerance:0.3, hint:"40.32 × 16.5", xp:10, tag:"foot" },
+            { id:"m4-4", type:"numeric", q:"La surface de réparation représente quel % du terrain ? (arrondi 0.1)", answer:9.3, tolerance:0.2, hint:"(665.28/7140) × 100", xp:15, tag:"foot" },
+            { id:"m4-5", type:"write", q:"Trouve les 6 derniers résultats du PSG. Calcule la moyenne de buts marqués et encaissés. Montre tes calculs.", minChars:120, xp:15, tag:"foot" },
+          ]}
+        }
+      },
+      anglais: {
+        name: "Anglais", color: "#1CB0F6", icon: "🔵",
+        weeks: {
+          1: { title: "Reading & Vocabulary", exercises: [
+            { id:"e1-1", type:"write", q:"Go to UEFA.com in English. Find an article about a recent Champions League match. Write 8 sentences IN ENGLISH summarizing it.", minChars:250, xp:15, tag:"foot" },
+            { id:"e1-2", type:"write", q:"From the article you read, list 10 new English words with their French translation.", minChars:100, xp:10, tag:"foot" },
+            { id:"e1-3", type:"multi", q:"Which is the correct past participle of 'to score'?", options:["scored","scoring","scores","scoren"], answer:0, xp:10 },
+            { id:"e1-4", type:"multi", q:"'Mbappé has scored 3 goals this season.' What tense is this?", options:["Past simple","Present perfect","Present continuous","Past perfect"], answer:1, xp:10 },
+          ]},
+          2: { title: "Grammar & Expression", exercises: [
+            { id:"e2-1", type:"write", q:"Write Mbappé's biography in English (15 lines min). Include: birthplace, clubs, achievements, why you admire him. Use past simple AND present perfect.", minChars:400, xp:20, tag:"foot" },
+            { id:"e2-2", type:"multi", q:"'He ___ to Real Madrid last summer.' Choose the correct form.", options:["has moved","moved","has move","moving"], answer:1, xp:10 },
+            { id:"e2-3", type:"multi", q:"'They ___ 3 Champions League titles since 2020.' Choose correctly.", options:["won","have won","has won","winning"], answer:1, xp:10 },
+          ]},
+          3: { title: "Listening & Writing", exercises: [
+            { id:"e3-1", type:"write", q:"Watch a match highlights video in English on YouTube (5 min+). Write 10 sentences about what you understood. Include the video link.", minChars:300, xp:15, tag:"foot" },
+            { id:"e3-2", type:"write", q:"Put FIFA in English for 3 days. List 15 words/expressions from the menus with their French meaning.", minChars:150, xp:15, tag:"fut" },
+          ]},
+          4: { title: "Consolidation", exercises: [
+            { id:"e4-1", type:"write", q:"You are a sports journalist. Write a match report (20 lines min) of an imaginary PSG vs Real Madrid CL final. Describe goals, atmosphere, key moments.", minChars:500, xp:25, tag:"foot" },
+            { id:"e4-2", type:"write", q:"Review all vocabulary learned this month. Write 15 sentences using these words correctly.", minChars:300, xp:15 },
+          ]}
+        }
+      },
+      physique: {
+        name: "Physique-Chimie", color: "#CE82FF", icon: "⚗️",
+        weeks: {
+          1: { title: "Circuits électriques", exercises: [
+            { id:"p1-1", type:"multi", q:"Dans un circuit en série, si une lampe grille, que se passe-t-il ?", options:["Rien, les autres marchent","Tout le circuit s'éteint","Seule la lampe suivante s'éteint","Le courant augmente"], answer:1, xp:10 },
+            { id:"p1-2", type:"multi", q:"Dans un circuit en dérivation, si une lampe grille ?", options:["Tout s'éteint","Les autres continuent de fonctionner","Le courant s'inverse","Toutes les lampes brillent plus"], answer:1, xp:10 },
+            { id:"p1-3", type:"write", q:"Décris le schéma d'un circuit en série ET d'un circuit en dérivation pour 4 projecteurs de stade. Utilise les symboles normalisés.", minChars:150, xp:15, tag:"foot" },
+          ]},
+          2: { title: "Tension et intensité", exercises: [
+            { id:"p2-1", type:"multi", q:"Quelle est l'unité de la tension électrique ?", options:["Ampère","Volt","Ohm","Watt"], answer:1, xp:10 },
+            { id:"p2-2", type:"multi", q:"Quelle est l'unité de l'intensité du courant ?", options:["Volt","Watt","Ampère","Ohm"], answer:2, xp:10 },
+            { id:"p2-3", type:"write", q:"Reprends 3 exercices corrigés en classe cette semaine. Refais-les ici sans regarder la correction.", minChars:200, xp:10 },
+          ]},
+          3: { title: "Transformations chimiques", exercises: [
+            { id:"p3-1", type:"multi", q:"La photosynthèse est une transformation...", options:["physique","chimique","mécanique","électrique"], answer:1, xp:10 },
+            { id:"p3-2", type:"multi", q:"L'évaporation de l'eau est un changement...", options:["chimique","nucléaire","d'état (physique)","biologique"], answer:2, xp:10 },
+            { id:"p3-3", type:"write", q:"Dans le stade du Bernabéu, trouve 3 exemples de transformations chimiques ET 3 de changements physiques. Explique chacun.", minChars:200, xp:15, tag:"foot" },
+          ]},
+          4: { title: "Révision", exercises: [
+            { id:"p4-1", type:"write", q:"Liste toutes les définitions importantes du trimestre (minimum 8 définitions avec explication).", minChars:250, xp:10 },
+            { id:"p4-2", type:"write", q:"Refais 3 exercices types du trimestre. Écris l'énoncé et ta résolution complète.", minChars:200, xp:15 },
+          ]}
+        }
+      },
+      francais: {
+        name: "Français", color: "#FF9600", icon: "✏️",
+        weeks: {
+          1: { title: "Grammaire & conjugaison", exercises: [
+            { id:"f1-1", type:"multi", q:"Passé simple de 'frapper' (il) ?", options:["il frappait","il frappa","il a frappé","il frapperait"], answer:1, xp:10 },
+            { id:"f1-2", type:"multi", q:"Passé simple de 'courir' (il) ?", options:["il coura","il courit","il courut","il a couru"], answer:2, xp:10 },
+            { id:"f1-3", type:"write", q:"Raconte le dernier match du PSG en LDC au PASSÉ SIMPLE. 10 phrases minimum. Utilise : s'élancer, frapper, plonger, surgir, décocher, intercepter...", minChars:350, xp:20, tag:"foot" },
+          ]},
+          2: { title: "Expression écrite", exercises: [
+            { id:"f2-1", type:"write", q:"Paragraphe argumenté : 'Le football est-il un art ?' Min 15 lignes. 2 arguments pour + 2 contre, avec exemples concrets.", minChars:450, xp:20, tag:"foot" },
+            { id:"f2-2", type:"write", q:"Auto-dictée : relis un paragraphe de ton manuel, ferme-le, réécris-le de mémoire. Indique de quel texte il s'agit.", minChars:150, xp:10 },
+          ]},
+          3: { title: "Vocabulaire & lecture", exercises: [
+            { id:"f3-1", type:"write", q:"5 synonymes de 'rapide' + 5 de 'puissant' + 5 de 'intelligent'. Une phrase d'exemple pour chaque mot. Pour décrire un joueur sans se répéter.", minChars:350, xp:15, tag:"foot" },
+            { id:"f3-2", type:"write", q:"Lis le chapitre en cours en français. Résume en 10 phrases. Identifie 2 figures de style et explique-les.", minChars:300, xp:15 },
+          ]},
+          4: { title: "Consolidation", exercises: [
+            { id:"f4-1", type:"write", q:"Portrait littéraire de Mbappé : décris-le comme un personnage de roman. Métaphores, comparaisons, vocabulaire soutenu. 15 lignes minimum.", minChars:450, xp:25, tag:"foot" },
+            { id:"f4-2", type:"write", q:"Reprends une rédaction rendue ce trimestre. Lis les commentaires du prof. Réécris le passage le moins bien noté, en améliorant.", minChars:200, xp:15 },
+          ]}
+        }
+      },
+      histgeo: {
+        name: "Histoire-Géo", color: "#FFC800", icon: "🌍",
+        weeks: {
+          1: { title: "Cours de la semaine", exercises: [
+            { id:"h1-1", type:"write", q:"Relis ton cours d'histoire. Écris les 3 idées principales, 2-3 phrases chacune. Reformule avec tes mots (pas de copier-coller).", minChars:200, xp:10 },
+          ]},
+          2: { title: "Géographie + LDC", exercises: [
+            { id:"h2-1", type:"write", q:"Prends les 8 équipes des quarts de LDC. Pour chaque ville : le pays, un fait géographique (fleuve, relief, climat), un fait historique.", minChars:300, xp:20, tag:"foot" },
+          ]},
+          3: { title: "Révision active", exercises: [
+            { id:"h3-1", type:"write", q:"Choisis un chapitre d'histoire. Rédige un paragraphe argumenté (10-15 lignes) comme en contrôle. Introduction, développement, conclusion.", minChars:350, xp:15 },
+          ]},
+          4: { title: "Contexte historique", exercises: [
+            { id:"h4-1", type:"write", q:"Real Madrid fondé en 1902, PSG en 1970. Pour chaque date, explique le contexte européen (politique, social, économique). 10 lignes minimum par date.", minChars:400, xp:20, tag:"foot" },
+          ]}
+        }
+      },
+      svt: {
+        name: "SVT", color: "#58CC02", icon: "🌿",
+        weeks: {
+          1: { title: "Cours", exercises: [
+            { id:"s1-1", type:"write", q:"Relis ton cours SVT. Écris les 5 définitions clés avec tes mots + un exemple pour chacune.", minChars:200, xp:10 },
+          ]},
+          2: { title: "Effort physique", exercises: [
+            { id:"s2-1", type:"write", q:"Un footballeur court 10-13 km/match. Quels muscles sont sollicités ? Quels systèmes (respiratoire, circulatoire, musculaire) travaillent et comment ? Détails.", minChars:250, xp:15, tag:"foot" },
+            { id:"s2-2", type:"multi", q:"Pendant un effort intense, la fréquence cardiaque...", options:["diminue","reste stable","augmente","s'arrête"], answer:2, xp:10 },
+          ]},
+          3: { title: "Approfondissement", exercises: [
+            { id:"s3-1", type:"write", q:"Refais un schéma bilan du chapitre en cours. Décris-le : quels éléments, flèches, légendes.", minChars:150, xp:10 },
+          ]},
+          4: { title: "Révision", exercises: [
+            { id:"s4-1", type:"write", q:"Fais un exercice type contrôle du chapitre en cours. Écris l'énoncé ET ta réponse complète.", minChars:200, xp:15 },
+          ]}
+        }
+      }
+    };
+
+    const RANKS = [
+      { name:"Phase de Poules 🌍", xp:0,    desc:"Tu débutes le tournoi — montre ce que tu vaux !" },
+      { name:"Barrages 🔰",        xp:120,  desc:"Qualifié pour les barrages ! La compétition commence." },
+      { name:"8ème de Finale ⚡",  xp:300,  desc:"Éliminatoire directe — une erreur et c'est fini !" },
+      { name:"Quart de Finale 🎯", xp:550,  desc:"Les 8 meilleurs ! Tu es dans l'élite du tournoi." },
+      { name:"Demi-Finale 🔥",     xp:850,  desc:"Plus que 4 équipes ! Tu touches la finale du doigt." },
+      { name:"Finale 💥",          xp:1200, desc:"LA Finale ! Donne tout ce que tu as !" },
+      { name:"Champion 🏆",        xp:1700, desc:"CHAMPION ! Tu as soulevé le trophée !" },
+      { name:"Légende du Foot 👑", xp:2300, desc:"Ballon d'Or. Légende absolue. Il n'y a plus rien au-dessus." }
+    ];
+
+    const STORAGE_KEY = "aydann-study-v5";
+    const PARENT_CODE = "9999";
+    const INIT = { answers:{}, xp:0, streak:0, lastDate:null, theme:"light" };
+
+    // ── Helpers ───────────────────────────────────────────
+    function load() { try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+    function save(d) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e) {} }
+    function getRank(xp) { let r = RANKS[0]; RANKS.forEach(rk => { if (xp >= rk.xp) r = rk; }); return r; }
+    function getNextRank(xp) { for (const r of RANKS) { if (xp < r.xp) return r; } return null; }
+    function getDarker(hex) {
+      if (!hex || hex.length < 7) return hex;
+      let r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+      r = Math.max(0,Math.floor(r*0.75)); g = Math.max(0,Math.floor(g*0.75)); b = Math.max(0,Math.floor(b*0.75));
+      return "#"+r.toString(16).padStart(2,"0")+g.toString(16).padStart(2,"0")+b.toString(16).padStart(2,"0");
+    }
+    function newStreak(prev) {
+      const today = new Date().toDateString();
+      const yesterday = new Date(Date.now()-86400000).toDateString();
+      if (prev.lastDate === today) return prev.streak || 0;
+      if (prev.lastDate === yesterday) return (prev.streak||0)+1;
+      return 1;
+    }
+    function findExercise(exId) {
+      for (const sid of Object.keys(EXERCISES))
+        for (const w of [1,2,3,4]) {
+          const ex = EXERCISES[sid]?.weeks[w]?.exercises?.find(e=>e.id===exId);
+          if (ex) return ex;
+        }
+      return null;
+    }
+
+    // ── Themes ────────────────────────────────────────────
+    const TH = {
+      dark:  { bg:"#131F24", sf:"#202F36", sfActive:"#2A3C45", tx:"#FFFFFF", mt:"#8A9AA3", bd:"#37464F", acc:"#1CB0F6", accDark:"#1899D6", ok:"#58CC02", okDark:"#46A302", err:"#FF4B4B", errDark:"#CC3030", warn:"#FFC800", warnDark:"#C89E00" },
+      light: { bg:"#F2F6FA", sf:"#FFFFFF", sfActive:"#F0F5FA", tx:"#2B3C4E", mt:"#778C9E", bd:"#DCE5EE", acc:"#1CB0F6", accDark:"#1899D6", ok:"#58CC02", okDark:"#46A302", err:"#FF4B4B", errDark:"#CC3030", warn:"#FFC800", warnDark:"#C89E00" }
+    };
+
+    // ═══════════════════════════════════════════════════════
+    // SPLASH SCREEN
+    // ═══════════════════════════════════════════════════════
+    function SplashScreen({ theme }) {
+      const T = TH[theme];
+      const subjects = Object.values(EXERCISES);
+      return (
+        <div style={{
+          position:"fixed", inset:0, zIndex:9999,
+          background: theme==="dark" ? "#131F24" : "#1CB0F6",
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+          animation:"splashFadeOut 0.5s ease-in 2.2s both",
+          overflow:"hidden"
+        }}>
+          <div style={{ position:"absolute", top:"-10%", right:"-15%", width:220, height:220, borderRadius:"50%", background:"rgba(255,255,255,0.07)", animation:"drift 4s ease-in-out infinite" }} />
+          <div style={{ position:"absolute", bottom:"-5%", left:"-10%", width:160, height:160, borderRadius:"50%", background:"rgba(255,255,255,0.05)", animation:"drift 5s ease-in-out infinite reverse" }} />
+
+          <div style={{ fontSize:88, animation:"bounceBall 0.65s cubic-bezier(.36,.07,.19,.97) infinite alternate", marginBottom:8 }}>⚽</div>
+
+          <div style={{ fontWeight:900, fontSize:30, color:"#fff", textAlign:"center", lineHeight:1.2, animation:"splashPopIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) 0.3s both", textShadow:"0 4px 0 rgba(0,0,0,0.15)" }}>
+            Aydann Champions Work
+          </div>
+          <div style={{ fontWeight:700, fontSize:16, color:"rgba(255,255,255,0.85)", marginTop:8, animation:"splashPopIn 0.5s ease 0.55s both" }}>
+            ⚡ Choisis ton challenge, deviens une légende !
+          </div>
+
+          <div style={{ display:"flex", gap:10, marginTop:28 }}>
+            {subjects.map((s, i) => (
+              <div key={i} style={{ width:42, height:42, borderRadius:13, background:s.color, boxShadow:`0 4px 0 ${getDarker(s.color)}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, animation:`splashPopIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) ${0.85+i*0.08}s both` }}>
+                {s.icon}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop:36, width:160, height:8, background:"rgba(255,255,255,0.25)", borderRadius:4, overflow:"hidden", animation:"splashPopIn 0.4s ease 1.4s both" }}>
+            <div style={{ height:"100%", borderRadius:4, background:"#fff", animation:"loadBar 1.5s cubic-bezier(0.4,0,0.2,1) 0.6s both" }} />
+          </div>
+        </div>
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // APP
+    // ═══════════════════════════════════════════════════════
+
+    function EntryView({ T, data, setView, setParentMode, totalProgress }) {
+      const [showCode, setShowCode] = React.useState(false);
+      const [code, setCode] = React.useState("");
+      const [err, setErr] = React.useState(false);
+      const [shake, setShake] = React.useState(false);
+
+      const tryParent = () => {
+        if (code === "9999") {
+          setParentMode(true);
+          setView("parent");
+        } else {
+          setErr(true);
+          setShake(true);
+          setTimeout(() => setShake(false), 500);
+        }
+      };
+
+      const xpPct = Math.min(100, Math.round(((data.xp||0) / 2300) * 100));
+
+      return (
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:"70vh", padding:"0 8px" }}>
+
+          {/* Logo / Titre */}
+          <div className="pop" style={{ textAlign:"center", marginBottom:32 }}>
+            <div style={{ fontSize:64, lineHeight:1, marginBottom:8 }}>⚽</div>
+            <div style={{ fontSize:28, fontWeight:900, color:T.tx, letterSpacing:-0.5 }}>Aydann Champions Work</div>
+            <div style={{ fontSize:15, color:T.mt, fontWeight:700, marginTop:6 }}>⚡ Choisis ton challenge, deviens une légende !</div>
+          </div>
+
+          {/* Carte AYDANN */}
+          <div className="pop" style={{ width:"100%", maxWidth:420, animationDelay:"0.1s" }}>
+            <button className="push" onClick={()=>setView("home")}
+              style={{ width:"100%", background:"linear-gradient(135deg,#1CB0F6,#0a8fd4)", border:"none", borderRadius:24, padding:"24px 20px", cursor:"pointer", display:"flex", alignItems:"center", gap:18, boxShadow:"0 6px 0 #0a6fa0", marginBottom:14, textAlign:"left" }}>
+              <div style={{ width:64, height:64, background:"rgba(255,255,255,0.25)", borderRadius:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:36, flexShrink:0 }}>🎮</div>
+              <div>
+                <div style={{ fontSize:22, fontWeight:900, color:"#fff" }}>Aydann</div>
+                <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", fontWeight:700, marginTop:3 }}>Accès direct · Mes challenges</div>
+                <div style={{ marginTop:8, height:6, background:"rgba(255,255,255,0.3)", borderRadius:3, width:160, overflow:"hidden" }}>
+                  <div style={{ height:"100%", width:`${xpPct}%`, background:"#fff", borderRadius:3 }} />
+                </div>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.75)", marginTop:4, fontWeight:700 }}>{data.xp||0} XP · {totalProgress()}% complété</div>
+              </div>
+            </button>
+          </div>
+
+          {/* Carte PARENTS */}
+          <div className="pop" style={{ width:"100%", maxWidth:420, animationDelay:"0.2s" }}>
+            {!showCode ? (
+              <button className="push" onClick={()=>setShowCode(true)}
+                style={{ width:"100%", background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:24, padding:"24px 20px", cursor:"pointer", display:"flex", alignItems:"center", gap:18, textAlign:"left" }}>
+                <div style={{ width:64, height:64, background:T.bd, borderRadius:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:36, flexShrink:0 }}>🛡️</div>
+                <div>
+                  <div style={{ fontSize:22, fontWeight:900, color:T.tx }}>Parents</div>
+                  <div style={{ fontSize:13, color:T.mt, fontWeight:700, marginTop:3 }}>Dashboard · Corrections · Suivi</div>
+                </div>
+              </button>
+            ) : (
+              <div className={shake?"shake":""} style={{ background:T.sf, border:`2px solid ${err?T.err:T.bd}`, borderBottomWidth:5, borderRadius:24, padding:"24px 20px" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
+                  <div style={{ fontSize:30 }}>🛡️</div>
+                  <div style={{ fontWeight:800, fontSize:17, color:T.tx }}>Code Parent</div>
+                </div>
+                <div style={{ display:"flex", gap:10 }}>
+                  <input
+                    autoFocus
+                    value={code}
+                    onChange={e=>{setCode(e.target.value);setErr(false);}}
+                    onKeyDown={e=>{if(e.key==="Enter") tryParent();}}
+                    placeholder="• • • •"
+                    type="password"
+                    maxLength={4}
+                    style={{ flex:1, padding:"14px 16px", background:T.bg, border:`2px solid ${err?T.err:T.bd}`, borderRadius:16, color:T.tx, fontSize:26, textAlign:"center", letterSpacing:8, fontWeight:900, outline:"none" }}
+                  />
+                  <button className="push" onClick={tryParent}
+                    style={{ background:T.tx, color:T.bg, border:"none", borderRadius:16, padding:"0 22px", fontWeight:900, cursor:"pointer", fontSize:20, boxShadow:`0 4px 0 ${T.mt}` }}>Go</button>
+                </div>
+                {err && <div style={{ fontSize:13, color:T.err, marginTop:10, fontWeight:800 }}>❌ Code incorrect</div>}
+                <button onClick={()=>{setShowCode(false);setCode("");setErr(false);}} style={{ background:"none", border:"none", color:T.mt, fontSize:13, fontWeight:700, cursor:"pointer", marginTop:10, padding:0 }}>Annuler</button>
+              </div>
+            )}
+          </div>
+
+          {/* Streak indicator */}
+          {(data.streak||0)>1 && (
+            <div className="pop" style={{ marginTop:20, background:T.warn+"20", border:`2px solid ${T.warn}60`, borderRadius:16, padding:"8px 18px", fontSize:15, fontWeight:800, color:T.warn, animationDelay:"0.3s" }}>
+              🔥 Série de {data.streak} jours — continue !
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function GlossaryView({ T, onBack }) {
+      const items = [
+        { emoji:"⚡", term:"XP (Points d'Expérience)", def:"Chaque exercice réussi rapporte des XP. Plus tu en gagnes, plus tu montes de phase !" },
+        { emoji:"🌍", term:"Phase de Poules → Légende", def:"Tes niveaux dans le tournoi. Comme en Ligue des Champions : tu commences par les poules et tu peux aller jusqu'à devenir Légende." },
+        { emoji:"🔢", term:"Exercice Numérique", def:"Tu dois saisir un nombre exact comme réponse. Une tolérance peut s'appliquer (ex : ±0.1)." },
+        { emoji:"📝", term:"Exercice Rédactionnel", def:"Tu écris un texte long (minimum de caractères requis). Papa valide ensuite pour te donner le bonus XP complet." },
+        { emoji:"☑️", term:"QCM (Choix Multiple)", def:"4 propositions, une seule bonne réponse. Lis bien avant de cliquer !" },
+        { emoji:"🔥", term:"Streak (Série)", def:"Nombre de jours consécutifs où tu as travaillé. Si tu sautes une journée, ça repart à 1 !" },
+        { emoji:"⏳", term:"En attente de validation", def:"Ton texte est soumis. Papa doit le lire et approuver pour que tu reçoives les 50% de XP bonus." },
+        { emoji:"✅", term:"Approuvé", def:"Papa a validé ta réponse rédigée. Tu reçois le bonus XP complet !" },
+        { emoji:"🔄", term:"À refaire", def:"Papa a demandé de corriger ta réponse. Relis ses commentaires et améliore ton texte." },
+        { emoji:"📅", term:"Calendrier", def:"Suis ta progression jour par jour. Objectif : au moins 1 exercice par jour minimum pour maintenir ta série !" },
+        { emoji:"Match 1–4", term:"Match (anciennement Semaine)", def:"Chaque matière est découpée en 4 matchs thématiques. Terminer un match = maîtriser le sujet !" },
+        { emoji:"🛡️", term:"Coin des Parents", def:"Zone sécurisée (code 4 chiffres). Papa peut y corriger tes exercices rédactionnels et valider tes réponses." },
+      ];
+      return (
+        <div style={{ padding:"0 4px" }}>
+          <div style={{ fontSize:22, fontWeight:900, marginBottom:20, display:"flex", alignItems:"center", gap:10 }}>
+            📖 <span>Glossaire</span>
+          </div>
+          {items.map((it, i) => (
+            <div key={i} className="pop" style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:"14px 16px", marginBottom:12, animationDelay:`${i*0.04}s` }}>
+              <div style={{ fontWeight:800, fontSize:16, marginBottom:4 }}>{it.emoji} {it.term}</div>
+              <div style={{ fontSize:14, color:T.mt, lineHeight:1.5 }}>{it.def}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+
+    function CalendarView({ T, data, getDarker }) {
+      const [calMonth, setCalMonth] = React.useState(new Date());
+      const DAILY_MIN = 1;
+
+      const activityByDate = React.useMemo(() => {
+        const map = {};
+        Object.entries(data.answers || {}).forEach(([id, ans]) => {
+          if (!ans.date) return;
+          const d = new Date(ans.date);
+          const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+          if (!map[key]) map[key] = { count: 0, xp: 0 };
+          map[key].count++;
+        });
+        return map;
+      }, [data.answers]);
+
+      const year = calMonth.getFullYear();
+      const month = calMonth.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+      const monthNames = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+
+      let activeDays = 0, goalDays = 0;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const key = `${year}-${month}-${d}`;
+        const dayDate = new Date(year, month, d);
+        if (dayDate > today) continue;
+        goalDays++;
+        if (activityByDate[key]?.count >= DAILY_MIN) activeDays++;
+      }
+      const monthPct = goalDays > 0 ? Math.round((activeDays / goalDays) * 100) : 0;
+
+      const cells = [];
+      const startPad = firstDay === 0 ? 6 : firstDay - 1;
+      for (let i = 0; i < startPad; i++) cells.push(null);
+      for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+      return (
+        <div style={{ padding:"0 4px" }}>
+          <div style={{ fontSize:22, fontWeight:900, marginBottom:16, display:"flex", alignItems:"center", gap:10 }}>
+            📅 <span>Calendrier</span>
+          </div>
+
+          <div style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:16, marginBottom:16 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+              <div style={{ fontWeight:800, fontSize:16 }}>🎯 Objectif journalier : {DAILY_MIN} exercice/jour</div>
+              <div style={{ fontWeight:900, fontSize:20, color: monthPct >= 80 ? "#58CC02" : monthPct >= 50 ? "#FFC800" : "#FF4B4B" }}>{monthPct}%</div>
+            </div>
+            <div style={{ height:10, background:T.bd, borderRadius:5, overflow:"hidden" }}>
+              <div style={{ height:"100%", width:`${monthPct}%`, background: monthPct >= 80 ? "#58CC02" : monthPct >= 50 ? "#FFC800" : "#FF4B4B", borderRadius:5, transition:"width 0.5s ease" }} />
+            </div>
+            <div style={{ fontSize:13, color:T.mt, marginTop:8, fontWeight:700 }}>
+              {activeDays} jour{activeDays > 1 ? "s" : ""} actif{activeDays > 1 ? "s" : ""} sur {goalDays} jour{goalDays > 1 ? "s" : ""} écoulés ce mois
+            </div>
+          </div>
+
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+            <button onClick={()=>setCalMonth(new Date(year, month-1, 1))} style={{ background:T.sf, border:`2px solid ${T.bd}`, borderRadius:14, padding:"8px 16px", fontWeight:800, cursor:"pointer", color:T.tx, fontSize:18 }}>‹</button>
+            <div style={{ fontWeight:900, fontSize:18 }}>{monthNames[month]} {year}</div>
+            <button onClick={()=>setCalMonth(new Date(year, month+1, 1))} style={{ background:T.sf, border:`2px solid ${T.bd}`, borderRadius:14, padding:"8px 16px", fontWeight:800, cursor:"pointer", color:T.tx, fontSize:18 }}>›</button>
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7, 1fr)", gap:4, marginBottom:4 }}>
+            {["Lu","Ma","Me","Je","Ve","Sa","Di"].map(d => (
+              <div key={d} style={{ textAlign:"center", fontSize:12, fontWeight:800, color:T.mt, padding:"4px 0" }}>{d}</div>
+            ))}
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(7, 1fr)", gap:4 }}>
+            {cells.map((day, i) => {
+              if (!day) return <div key={`pad-${i}`} />;
+              const key = `${year}-${month}-${day}`;
+              const activity = activityByDate[key];
+              const dayDate = new Date(year, month, day);
+              const isPast = dayDate < today && dayDate.toDateString() !== today.toDateString();
+              const isToday = dayDate.toDateString() === today.toDateString();
+              const isFuture = dayDate > today;
+              const hasGoal = activity?.count >= DAILY_MIN;
+              const hasSome = activity?.count > 0;
+
+              let bg = T.bg, border = T.bd, color = T.mt;
+              if (isToday) { bg = "#1CB0F620"; border = "#1CB0F6"; color = T.tx; }
+              if (hasGoal) { bg = "#58CC0230"; border = "#58CC02"; color = "#58CC02"; }
+              else if (hasSome) { bg = "#FFC80025"; border = "#FFC800"; color = "#FFC800"; }
+              else if (isPast) { bg = "#FF4B4B10"; border = "#FF4B4B30"; color = "#FF4B4B60"; }
+
+              return (
+                <div key={day} style={{ background:bg, border:`2px solid ${border}`, borderRadius:12, padding:"8px 4px", textAlign:"center", position:"relative", opacity:isFuture ? 0.35 : 1 }}>
+                  <div style={{ fontWeight:800, fontSize:14, color }}>{day}</div>
+                  {activity?.count > 0 && <div style={{ fontSize:10, fontWeight:700, color, marginTop:2 }}>×{activity.count}</div>}
+                  {isToday && !hasGoal && <div style={{ fontSize:9, color:"#1CB0F6", fontWeight:800, marginTop:1 }}>auj.</div>}
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ display:"flex", gap:12, marginTop:16, flexWrap:"wrap" }}>
+            {[["#58CC02","✅ Objectif atteint"],["#FFC800","⚡ Partiel"],["#FF4B4B","❌ Rien ce jour"],["#1CB0F6","📍 Aujourd'hui"]].map(([c,l])=>(
+              <div key={l} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12, fontWeight:700, color:T.mt }}>
+                <div style={{ width:12, height:12, borderRadius:4, background:c+"40", border:`2px solid ${c}` }} />{l}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [data, setData] = useState(() => load() || INIT);
+      const [view, setView] = useState("entry");
+      const [subId, setSubId] = useState(null);
+      const [weekN, setWeekN] = useState(1);
+      const [exIdx, setExIdx] = useState(0);
+      const [input, setInput] = useState("");
+      const [feedback, setFeedback] = useState(null);
+      const [attempts, setAttempts] = useState(0);
+      const [parentMode, setParentMode] = useState(false);
+      const [codeInput, setCodeInput] = useState("");
+      const [codeError, setCodeError] = useState(false);
+      const [selectedOption, setSelectedOption] = useState(null);
+      const [isAnimatingXP, setIsAnimatingXP] = useState(false);
+      const [animatedXP, setAnimatedXP] = useState(0);
+      const [shakeUI, setShakeUI] = useState(false);
+      const [splashDone, setSplashDone] = useState(false);
+
+      useEffect(() => {
+        const t = setTimeout(() => {
+          setSplashDone(true);
+          const el = document.getElementById("pre-splash");
+          if (el) { el.style.opacity = "0"; setTimeout(() => el.remove(), 500); }
+        }, 2700);
+        return () => clearTimeout(t);
+      }, []);
+
+      useEffect(() => { save(data); }, [data]);
+
+      const T = TH[data.theme || "light"];
+      const rank = getRank(data.xp||0);
+      const nextRank = getNextRank(data.xp||0);
+      const sub = subId ? EXERCISES[subId] : null;
+      const weekData = sub?.weeks[weekN];
+      const currentEx = weekData?.exercises[exIdx];
+
+      const weekDone = (sid, w) => {
+        const wk = EXERCISES[sid]?.weeks[w];
+        if (!wk) return { done:0, total:0 };
+        const done = wk.exercises.filter(ex => {
+          const a = data.answers[ex.id];
+          if (!a) return false;
+          if (ex.type === "write") return a.status === "submitted" || a.status === "approved";
+          return a.status === "correct";
+        }).length;
+        return { done, total: wk.exercises.length };
+      };
+      const totalProgress = () => {
+        let done=0, total=0;
+        Object.keys(EXERCISES).forEach(sid => { [1,2,3,4].forEach(w => { const r=weekDone(sid,w); done+=r.done; total+=r.total; }); });
+        return total ? Math.round((done/total)*100) : 0;
+      };
+
+      const triggerSuccess = (msg, xpAmt=0) => { setFeedback({ type:"success", msg }); if(xpAmt>0){setAnimatedXP(xpAmt);setIsAnimatingXP(true);setTimeout(()=>setIsAnimatingXP(false),1500);} };
+      const triggerPending = (msg, xpAmt=0) => { setFeedback({ type:"pending", msg }); if(xpAmt>0){setAnimatedXP(xpAmt);setIsAnimatingXP(true);setTimeout(()=>setIsAnimatingXP(false),1500);} };
+      const triggerError   = (msg) => { setFeedback({ type:"error", msg }); setShakeUI(true); setTimeout(()=>setShakeUI(false),500); };
+
+      const submitAnswer = () => {
+        if (!currentEx) return;
+        const ex = currentEx;
+        const today = new Date().toDateString();
+
+        if (ex.type === "numeric") {
+          const val = parseFloat(input.replace(",","."));
+          if (isNaN(val)) { triggerError("Oops ! Écris un nombre valide !"); return; }
+          if (Math.abs(val - ex.answer) <= (ex.tolerance||0)) {
+            setData(p => ({ ...p, answers:{ ...p.answers, [ex.id]:{ value:val, status:"correct", date:new Date().toISOString() }}, xp:(p.xp||0)+ex.xp, lastDate:today, streak:newStreak(p) }));
+            triggerSuccess(`Génial ! +${ex.xp} XP 🚀`, ex.xp); setAttempts(0);
+          } else {
+            setAttempts(a=>a+1); triggerError(`Presque ! Ta réponse : ${val}. Réessaie.${attempts>=1&&ex.hint?` Indice : ${ex.hint}`:""}`);
+          }
+        }
+        else if (ex.type === "multi") {
+          if (selectedOption === null) { triggerError("Touche une réponse avant de valider !"); return; }
+          if (selectedOption === ex.answer) {
+            setData(p => ({ ...p, answers:{ ...p.answers, [ex.id]:{ value:selectedOption, status:"correct", date:new Date().toISOString() }}, xp:(p.xp||0)+ex.xp, lastDate:today, streak:newStreak(p) }));
+            triggerSuccess(`Exactement ! +${ex.xp} XP 🎉`, ex.xp); setAttempts(0);
+          } else {
+            setAttempts(a=>a+1); triggerError("Aïe, ce n'est pas ça. Réessaie !"); setSelectedOption(null);
+          }
+        }
+        else if (ex.type === "write") {
+          if (input.trim().length < (ex.minChars||50)) { triggerError(`Encore un effort ! Il faut ${ex.minChars} lettres min. Tu en as ${input.trim().length}.`); return; }
+          const prev = data.answers[ex.id];
+          const xpAlreadyGiven = prev?.status==="submitted"||prev?.status==="redo";
+          const xpToAdd = xpAlreadyGiven ? 0 : Math.round(ex.xp*0.5);
+          setData(p => ({ ...p, answers:{ ...p.answers, [ex.id]:{ value:input.trim(), status:"submitted", date:new Date().toISOString() }}, xp:(p.xp||0)+xpToAdd, lastDate:today, streak:newStreak(p) }));
+          if (xpToAdd > 0) triggerPending(`Super ! +${xpToAdd} XP ⏳ Papa valide pour le bonus !`, xpToAdd);
+          else { setIsAnimatingXP(false); setFeedback({ type:"pending", msg:"Texte mis à jour ! Papa va regarder ça 👀" }); }
+        }
+      };
+
+      const openExercise = (sid, w, idx) => { setSubId(sid); setWeekN(w); setExIdx(idx); setView("exercise"); setInput(""); setFeedback(null); setAttempts(0); setSelectedOption(null); };
+      const goNext = () => { if(weekData&&exIdx<weekData.exercises.length-1){setExIdx(exIdx+1);setInput("");setFeedback(null);setAttempts(0);setSelectedOption(null);}else{setView("week");} };
+      const approveAnswer = (exId, approved) => {
+        setData(prev => {
+          const ans = prev.answers[exId]; if(!ans) return prev;
+          const ex = findExercise(exId);
+          const bonusXP = approved&&ex ? Math.round(ex.xp*0.5) : 0;
+          return { ...prev, answers:{ ...prev.answers, [exId]:{ ...ans, status:approved?"approved":"redo", reviewDate:new Date().toISOString() }}, xp:(prev.xp||0)+bonusXP };
+        });
+      };
+      const pendingReviews = Object.entries(data.answers||{}).filter(([,a])=>a.status==="submitted");
+
+      const card = { background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:6, borderRadius:24, padding:20 };
+      const btn = (bg) => ({ background:bg, color:"#fff", border:"none", borderRadius:20, padding:"16px 24px", fontWeight:800, fontSize:18, cursor:"pointer", fontFamily:"Nunito,sans-serif", display:"inline-flex", alignItems:"center", justifyContent:"center", gap:12, width:"100%", boxShadow:`0 6px 0 ${getDarker(bg)}`, transition:"transform 0.1s, box-shadow 0.1s" });
+
+      return (
+        <div style={{ fontFamily:"Nunito,sans-serif", background:T.bg, color:T.tx, minHeight:"100vh", maxWidth:500, margin:"0 auto", transition:"background 0.3s,color 0.3s", overflowX:"hidden" }}>
+          <style>{`
+            @keyframes splashFadeOut { to { opacity:0; pointer-events:none; } }
+            @keyframes splashPopIn   { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+            @keyframes bounceBall    { from{transform:translateY(0) rotate(0deg)} to{transform:translateY(-28px) rotate(20deg)} }
+            @keyframes loadBar       { from{width:0} to{width:100%} }
+            @keyframes drift         { 0%,100%{transform:translate(0,0)} 50%{transform:translate(12px,-12px)} }
+            @keyframes popIn         { 0%{opacity:0;transform:scale(0.8)} 70%{transform:scale(1.05)} 100%{opacity:1;transform:scale(1)} }
+            @keyframes shake         { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+            @keyframes floatUp       { 0%{transform:translateY(0) scale(0.8);opacity:0} 20%{transform:translateY(-20px) scale(1.2);opacity:1} 100%{transform:translateY(-100px) scale(1);opacity:0} }
+            .pop  { animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both; }
+            .push:active { transform:translateY(5px) !important; box-shadow:none !important; }
+            .shake { animation:shake 0.5s both; }
+            textarea,input { font-family:Nunito,sans-serif; transition:all 0.2s; }
+            textarea:focus,input:focus { outline:none; }
+            *{box-sizing:border-box}
+          `}</style>
+
+          {/* ── SPLASH ── */}
+          {!splashDone && <SplashScreen theme={data.theme||"light"} />}
+
+          {/* ── XP ANIM ── */}
+          {isAnimatingXP && (
+            <div style={{ position:"fixed", top:"30%", left:"50%", transform:"translate(-50%,-50%)", zIndex:999, pointerEvents:"none" }}>
+              <div style={{ fontWeight:900, fontSize:64, color:T.ok, textShadow:`0 4px 0 ${T.okDark}`, animation:"floatUp 1.5s ease-out forwards" }}>+{animatedXP}</div>
+            </div>
+          )}
+
+          {/* ── HEADER ── */}
+          <div style={{ position:"sticky", top:0, zIndex:50, background:T.bg, padding:"20px 24px 16px", borderBottom:`2px solid ${T.bd}`, display:view==="entry"?"none":"block" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <div>
+                {(view!=="home"&&view!=="parent"&&view!=="entry") && (
+                  <button className="push" onClick={()=>{setView(view==="exercise"?"week":"home");setFeedback(null);}} style={{ background:"none", border:"none", color:T.mt, fontSize:16, fontWeight:800, cursor:"pointer", marginBottom:8, display:"flex", alignItems:"center", gap:4 }}>
+                    <span style={{ fontSize:22 }}>←</span> Accueil
+                  </button>
+                )}
+                {view==="home" && (
+                  <button className="push" onClick={()=>setView("entry")} style={{ background:"none", border:"none", color:T.mt, fontSize:13, fontWeight:800, cursor:"pointer", marginBottom:8, display:"flex", alignItems:"center", gap:4 }}>
+                    <span style={{ fontSize:16 }}>⇄</span> Changer
+                  </button>
+                )}
+                {view==="parent" && (
+                  <button className="push" onClick={()=>{setParentMode(false);setView("entry");}} style={{ background:"none", border:"none", color:T.mt, fontSize:16, fontWeight:800, cursor:"pointer", marginBottom:8, display:"flex", alignItems:"center", gap:4 }}>
+                    <span style={{ fontSize:22 }}>←</span> Retour
+                  </button>
+                )}
+                <div style={{ fontSize:26, fontWeight:900, color:T.tx, marginTop:view==="home"?8:0 }}>
+                  {view==="entry"?"":view==="home"?"Aydann Champions Work":view==="glossary"?"📖 Glossaire":view==="calendar"?"📅 Calendrier":view==="parent"?"Coin Parents 🛡️":view==="week"&&sub?sub.name:view==="exercise"&&sub?"Mission !":""}
+                </div>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                {(data.streak||0)>1 && <div style={{ background:T.warn+"25", border:`2px solid ${T.warn}60`, borderRadius:16, padding:"6px 10px", fontSize:14, fontWeight:800, color:T.warn }}>🔥{data.streak}j</div>}
+                <button className="push" onClick={()=>setData(p=>({...p,theme:p.theme==="dark"?"light":"dark"}))} style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:4, borderRadius:"50%", width:46, height:46, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:22 }}>
+                  {data.theme==="dark"?"☀️":"🌙"}
+                </button>
+              </div>
+            </div>
+            {/* XP Bar */}
+            <div style={{ marginTop:20, display:"flex", alignItems:"center", gap:14, background:T.sf, padding:14, borderRadius:22, border:`2px solid ${T.bd}`, borderBottomWidth:5 }}>
+              <div style={{ flexShrink:0, width:52, height:52, borderRadius:18, background:T.warn, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, boxShadow:`0 4px 0 ${T.warnDark}` }}>⚡</div>
+              <div style={{ flex:1 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+                  <div style={{ fontSize:22, fontWeight:900 }}>{data.xp||0} <span style={{ fontSize:14, color:T.mt, fontWeight:700 }}>XP</span></div>
+                  <div style={{ fontSize:14, fontWeight:800, color:T.acc }}>{rank.name}</div>
+                </div>
+                {nextRank ? (
+                  <div style={{ height:10, background:T.bd, borderRadius:5, overflow:"hidden" }}>
+                    <div style={{ height:"100%", width:`${Math.min(100,((data.xp-rank.xp)/(nextRank.xp-rank.xp))*100)}%`, background:T.warn, borderRadius:5, transition:"width 0.5s ease" }} />
+                  </div>
+                ) : (
+                  <div style={{ fontSize:13, color:T.ok, fontWeight:800 }}>Niveau Max ! 🏆</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ── CONTENU ── */}
+          <div style={{ padding:view==="entry"?"0":"24px 20px 120px" }}>
+
+            {/* ═══ HOME ═══ */}
+                        {view==="entry" && <EntryView T={T} data={data} setView={setView} setParentMode={setParentMode} totalProgress={totalProgress} />}
+
+            {view==="home" && <>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20, padding:"0 4px" }}>
+                <div style={{ fontSize:20, fontWeight:800 }}>Choisis ton challenge</div>
+                <div style={{ background:T.ok+"25", border:`2px solid ${T.ok}40`, borderRadius:14, padding:"4px 12px", fontSize:14, fontWeight:800, color:T.ok }}>{totalProgress()}% ✅</div>
+              </div>
+              {Object.entries(EXERCISES).map(([sid, s], idx) => {
+                let done=0,total=0; [1,2,3,4].forEach(w=>{const r=weekDone(sid,w);done+=r.done;total+=r.total;});
+                const pct=total?Math.round((done/total)*100):0;
+                return (
+                  <div key={sid} className="pop push" onClick={()=>{setSubId(sid);setView("week");setWeekN(1);}} style={{ ...card, cursor:"pointer", marginBottom:16, animationDelay:`${idx*0.05}s`, borderColor:pct===100?T.ok:T.bd, background:pct===100?T.ok+"10":T.sf, position:"relative" }}>
+                    {pct===100&&<div style={{ position:"absolute", top:-10, right:-10, fontSize:28 }}>⭐</div>}
+                    <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                      <div style={{ width:60, height:60, borderRadius:18, background:s.color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, boxShadow:`0 4px 0 ${getDarker(s.color)}` }}>{s.icon}</div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontWeight:800, fontSize:18, marginBottom:8 }}>{s.name}</div>
+                        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                          <div style={{ flex:1, height:10, background:T.bd, borderRadius:5, overflow:"hidden" }}>
+                            <div style={{ height:"100%", width:`${pct}%`, background:pct===100?T.ok:s.color, borderRadius:5 }} />
+                          </div>
+                          <div style={{ fontSize:14, fontWeight:800, color:pct===100?T.ok:T.mt, width:36, textAlign:"right" }}>{pct}%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {/* ── NAVIGATION EXTRA ── */}
+              <div style={{ display:"flex", gap:12, marginTop:16 }}>
+                <button className="push" onClick={()=>setView("calendar")}
+                  style={{ flex:1, background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:16, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
+                  <div style={{ fontSize:32 }}>📅</div>
+                  <div style={{ fontWeight:800, fontSize:14, color:T.tx }}>Calendrier</div>
+                  <div style={{ fontSize:12, color:T.mt, fontWeight:700 }}>Suivi journalier</div>
+                </button>
+                <button className="push" onClick={()=>setView("glossary")}
+                  style={{ flex:1, background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:16, cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
+                  <div style={{ fontSize:32 }}>📖</div>
+                  <div style={{ fontWeight:800, fontSize:14, color:T.tx }}>Glossaire</div>
+                  <div style={{ fontSize:12, color:T.mt, fontWeight:700 }}>Comprendre les règles</div>
+                </button>
+              </div>
+
+            </>}
+
+            {/* ═══ SEMAINES ═══ */}
+            {view==="week"&&sub && <>
+              <div style={{ display:"flex", gap:8, marginBottom:20 }}>
+                {[1,2,3,4].map(w=>{const r=weekDone(subId,w);const active=weekN===w;return(
+                  <button className="push" key={w} onClick={()=>setWeekN(w)} style={{ flex:1, padding:"10px 0", borderRadius:18, border:`2px solid ${active?sub.color:T.bd}`, borderBottomWidth:active?6:4, cursor:"pointer", fontSize:14, fontWeight:800, background:active?sub.color:T.sf, color:active?"#fff":T.mt, display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
+                    Match {w}<div style={{ fontSize:11 }}>{r.done}/{r.total}</div>
+                  </button>
+                );})}
+              </div>
+              {weekData && <>
+                <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20, padding:"0 4px" }}>
+                  <div style={{ fontSize:26 }}>{sub.icon}</div>
+                  <div style={{ fontSize:22, fontWeight:900 }}>{weekData.title}</div>
+                </div>
+                {weekData.exercises.map((ex, idx) => {
+                  const ans = data.answers[ex.id];
+                  const status = ans?.status;
+                  const isDone = status==="correct"||status==="approved";
+                  const isPending = status==="submitted";
+                  const isRedo = status==="redo";
+                  const border = isDone?T.ok:isPending?T.warn:isRedo?T.err:T.bd;
+                  const icon = isDone?"✅":isPending?"⏳":isRedo?"🔄":"🎯";
+                  return (
+                    <div key={ex.id} className="pop push" onClick={()=>{ if(!isDone||isRedo) openExercise(subId,weekN,idx); }} style={{ ...card, marginBottom:14, cursor:isDone&&!isRedo?"default":"pointer", border:`2px solid ${border}`, borderBottomWidth:6, background:isDone?T.ok+"10":isPending?T.warn+"10":isRedo?T.err+"10":T.sf, animationDelay:`${idx*0.04}s`, opacity:isDone&&!isRedo?0.75:1, position:"relative" }}>
+                      <div style={{ display:"flex", gap:14, alignItems:"center" }}>
+                        <div style={{ flexShrink:0, width:46, height:46, borderRadius:14, background:T.bg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, border:`2px solid ${border}` }}>{icon}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ display:"flex", gap:8, marginBottom:6 }}>
+                            {ex.tag&&<span style={{ fontSize:11, color:ex.tag==="fut"?T.warn:T.ok, fontWeight:900 }}>{ex.tag==="fut"?"🎮 FUT":"⚽ FOOT"}</span>}
+                            <span style={{ fontSize:11, fontWeight:900, color:T.acc }}>+{ex.xp} XP</span>
+                          </div>
+                          <div style={{ fontSize:15, fontWeight:700, lineHeight:1.4 }}>{ex.q.length>90?ex.q.slice(0,90)+"...":ex.q}</div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </>}
+            </>}
+
+            {/* ═══ EXERCICE ═══ */}
+            {view==="exercise"&&currentEx && <>
+              <div className="pop">
+                <div style={{ textAlign:"center", marginBottom:24 }}>
+                  <span style={{ background:T.sf, border:`2px solid ${T.bd}`, color:T.mt, padding:"8px 16px", borderRadius:20, fontSize:13, fontWeight:800, textTransform:"uppercase" }}>Étape {exIdx+1}/{weekData.exercises.length}</span>
+                </div>
+                <div style={{ fontSize:24, lineHeight:1.4, fontWeight:800, textAlign:"center", marginBottom:28, color:T.tx }}>{currentEx.q}</div>
+
+                {(data.answers[currentEx.id]?.status==="correct"||data.answers[currentEx.id]?.status==="approved") && (
+                  <div style={{ textAlign:"center", padding:36, background:T.ok+"15", borderRadius:28, border:`4px solid ${T.ok}` }}>
+                    <div style={{ fontSize:56, marginBottom:12 }}>🏆</div>
+                    <div style={{ color:T.okDark, fontSize:22, fontWeight:900, marginBottom:10 }}>Gagné !</div>
+                    <div style={{ fontSize:16, color:T.tx, marginBottom:28, fontWeight:600 }}>{typeof data.answers[currentEx.id].value==="string"?"Texte bien enregistré.":`Ta réponse : ${data.answers[currentEx.id].value}`}</div>
+                    <button className="push" onClick={goNext} style={btn(T.acc)}>On continue ! →</button>
+                  </div>
+                )}
+                {data.answers[currentEx.id]?.status==="submitted" && (
+                  <div style={{ textAlign:"center", padding:36, background:T.warn+"15", borderRadius:28, border:`4px solid ${T.warn}` }}>
+                    <div style={{ fontSize:56, marginBottom:12 }}>⏳</div>
+                    <div style={{ color:T.warnDark, fontSize:22, fontWeight:900, marginBottom:10 }}>Envoyé !</div>
+                    <div style={{ fontSize:16, color:T.tx, marginBottom:28, fontWeight:600 }}>Papa va lire ton texte. Reviens après !</div>
+                    <button className="push" onClick={goNext} style={btn(T.acc)}>On continue ! →</button>
+                  </div>
+                )}
+
+                {!(data.answers[currentEx.id]?.status==="correct"||data.answers[currentEx.id]?.status==="approved"||data.answers[currentEx.id]?.status==="submitted") && (
+                  <div className={shakeUI?"shake":""}>
+                    {currentEx.type==="numeric" && (
+                      <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submitAnswer()} placeholder="0" type="text" inputMode="decimal" style={{ width:"100%", padding:22, background:T.sf, border:`4px solid ${feedback?.type==="error"?T.err:T.bd}`, borderRadius:22, color:T.tx, fontSize:44, fontWeight:900, textAlign:"center" }} />
+                    )}
+                    {currentEx.type==="multi" && (
+                      <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                        {currentEx.options.map((opt,i)=>(
+                          <button className="push" key={i} onClick={()=>setSelectedOption(i)} style={{ width:"100%", padding:18, borderRadius:18, border:`${selectedOption===i?"3px":"2px"} solid ${selectedOption===i?T.acc:T.bd}`, borderBottomWidth:selectedOption===i?5:4, background:selectedOption===i?T.acc+"15":T.sf, color:T.tx, fontSize:17, fontWeight:700, textAlign:"left", cursor:"pointer", display:"flex", alignItems:"center", gap:14 }}>
+                            <div style={{ width:38, height:38, borderRadius:"50%", background:selectedOption===i?T.acc:T.bg, color:selectedOption===i?"#fff":T.tx, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:900, border:`2px solid ${selectedOption===i?T.acc:T.bd}` }}>{i+1}</div>
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {currentEx.type==="write" && (
+                      <div>
+                        <textarea value={input} onChange={e=>setInput(e.target.value)} placeholder="Commence à écrire ici..." style={{ width:"100%", padding:18, background:T.sf, border:`4px solid ${T.bd}`, borderRadius:22, color:T.tx, fontSize:17, fontWeight:600, lineHeight:1.6, resize:"vertical", minHeight:200 }} />
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:10, padding:"0 6px" }}>
+                          <div style={{ fontSize:14, fontWeight:800, color:input.trim().length>=(currentEx.minChars||50)?T.ok:T.mt }}>{input.trim().length} / {currentEx.minChars||50} lettres min</div>
+                          {input.trim().length>=(currentEx.minChars||50)&&<div style={{ fontSize:22 }}>✅</div>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {feedback && !(data.answers[currentEx.id]?.status==="correct"||data.answers[currentEx.id]?.status==="approved"||data.answers[currentEx.id]?.status==="submitted") && (
+                  <div className="pop" style={{ marginTop:20, padding:"14px 18px", borderRadius:18, display:"flex", alignItems:"center", gap:14, background:feedback.type==="success"?T.ok+"15":feedback.type==="pending"?T.warn+"15":T.err+"15", border:`3px solid ${feedback.type==="success"?T.ok:feedback.type==="pending"?T.warn:T.err}` }}>
+                    <div style={{ fontSize:28 }}>{feedback.type==="success"?"🎉":feedback.type==="pending"?"⏳":"❌"}</div>
+                    <div style={{ color:feedback.type==="success"?T.okDark:feedback.type==="pending"?T.warnDark:T.errDark, fontWeight:800, fontSize:16, lineHeight:1.3 }}>{feedback.msg}</div>
+                  </div>
+                )}
+
+                {!(data.answers[currentEx.id]?.status==="correct"||data.answers[currentEx.id]?.status==="approved"||data.answers[currentEx.id]?.status==="submitted") && (
+                  <div style={{ marginTop:28 }}>
+                    {(!feedback||feedback.type==="error") && <button className="push" onClick={submitAnswer} style={btn(sub.color)}>{currentEx.type==="write"?"Envoyer ! 📤":"Vérifier ! ✓"}</button>}
+                    {(feedback?.type==="success"||feedback?.type==="pending") && <button className="push" onClick={goNext} style={btn(T.ok)}>Continuer <span style={{ fontSize:18 }}>→</span></button>}
+                  </div>
+                )}
+              </div>
+            </>}
+
+            
+            {/* ═══ COIN PARENTS ═══ */}
+            {view==="parent"&&parentMode && (() => {
+              // ── Stats calculées ──
+              const today = new Date();
+              const month = today.getMonth(), year = today.getFullYear();
+              const daysInMonth = new Date(year, month+1, 0).getDate();
+              let activeDays = 0;
+              const activeDaySet = new Set();
+              Object.values(data.answers||{}).forEach(a => {
+                if (!a.date) return;
+                const d = new Date(a.date);
+                if (d.getMonth()===month && d.getFullYear()===year) {
+                  activeDaySet.add(d.getDate());
+                }
+              });
+              activeDays = activeDaySet.size;
+              const daysPassed = today.getDate();
+              const dayPct = daysPassed > 0 ? Math.round((activeDays/daysPassed)*100) : 0;
+
+              // Progression par matière
+              const subjectStats = Object.entries(EXERCISES).map(([sid, s]) => {
+                let done=0, total=0;
+                [1,2,3,4].forEach(w => { const r=weekDone(sid,w); done+=r.done; total+=r.total; });
+                return { sid, name:s.name, icon:s.icon, color:s.color, done, total, pct: total ? Math.round((done/total)*100) : 0 };
+              });
+
+              // Progression par match (global)
+              const matchStats = [1,2,3,4].map(w => {
+                let done=0, total=0;
+                Object.keys(EXERCISES).forEach(sid => { const r=weekDone(sid,w); done+=r.done; total+=r.total; });
+                return { w, done, total, pct: total ? Math.round((done/total)*100) : 0 };
+              });
+
+              // Obj journalier aujourd'hui
+              const todayKey = `${year}-${month}-${today.getDate()}`;
+              const todayDone = Object.values(data.answers||{}).filter(a => {
+                if (!a.date) return false;
+                const d = new Date(a.date);
+                return d.getFullYear()===year && d.getMonth()===month && d.getDate()===today.getDate();
+              }).length;
+              const todayGoalMet = todayDone >= 1;
+
+              return (
+                <>
+                  {/* ── En-tête parent ── */}
+                  <div className="pop" style={{ background:"linear-gradient(135deg,#FF6B35,#e85d00)", borderRadius:24, padding:"20px 22px", marginBottom:18, display:"flex", alignItems:"center", gap:14, boxShadow:"0 6px 0 #b84500" }}>
+                    <div style={{ fontSize:42 }}>🛡️</div>
+                    <div>
+                      <div style={{ fontSize:22, fontWeight:900, color:"#fff" }}>Dashboard Parent</div>
+                      <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", fontWeight:700 }}>Suivi en temps réel · Aydann</div>
+                    </div>
+                  </div>
+
+                  {/* ── KPIs ── */}
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:18 }}>
+                    {[
+                      ["⚡","Total XP", data.xp||0, "#1CB0F6"],
+                      ["🔥","Série", `${data.streak||0}j`, "#FF9600"],
+                      ["📈","Progression", `${totalProgress()}%`, "#58CC02"],
+                      ["⏳","En attente", pendingReviews.length, pendingReviews.length>0?"#FF4B4B":"#58CC02"]
+                    ].map(([icon,label,val,color]) => (
+                      <div key={label} className="pop" style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:"16px 12px", textAlign:"center" }}>
+                        <div style={{ fontSize:26, marginBottom:4 }}>{icon}</div>
+                        <div style={{ fontSize:11, color:T.mt, fontWeight:800, textTransform:"uppercase", marginBottom:2 }}>{label}</div>
+                        <div style={{ fontSize:28, fontWeight:900, color }}>{val}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ── Objectif journalier ── */}
+                  <div className="pop" style={{ background:todayGoalMet?"#58CC0215":"#FF4B4B10", border:`2px solid ${todayGoalMet?"#58CC02":"#FF4B4B"}`, borderBottomWidth:5, borderRadius:20, padding:"14px 18px", marginBottom:18, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <div>
+                      <div style={{ fontWeight:900, fontSize:16 }}>Objectif du jour</div>
+                      <div style={{ fontSize:13, color:T.mt, fontWeight:700 }}>{todayDone} exercice{todayDone!==1?"s":""} aujourd'hui</div>
+                    </div>
+                    <div style={{ fontSize:32 }}>{todayGoalMet?"✅":"❌"}</div>
+                  </div>
+
+                  {/* ── Activité du mois ── */}
+                  <div className="pop" style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:"16px 18px", marginBottom:18 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+                      <div style={{ fontWeight:900, fontSize:16 }}>📅 Activité du mois</div>
+                      <div style={{ fontWeight:900, fontSize:18, color: dayPct>=80?"#58CC02":dayPct>=50?"#FFC800":"#FF4B4B" }}>{dayPct}%</div>
+                    </div>
+                    <div style={{ height:8, background:T.bd, borderRadius:4, overflow:"hidden", marginBottom:8 }}>
+                      <div style={{ height:"100%", width:`${dayPct}%`, background:dayPct>=80?"#58CC02":dayPct>=50?"#FFC800":"#FF4B4B", borderRadius:4, transition:"width 0.6s ease" }} />
+                    </div>
+                    <div style={{ fontSize:13, color:T.mt, fontWeight:700 }}>{activeDays} jour{activeDays!==1?"s":""} actif{activeDays!==1?"s":""} sur {daysPassed} jour{daysPassed!==1?"s":""} écoulés</div>
+                  </div>
+
+                  {/* ── Progression par matière ── */}
+                  <div className="pop" style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:"16px 18px", marginBottom:18 }}>
+                    <div style={{ fontWeight:900, fontSize:16, marginBottom:14 }}>📚 Par matière</div>
+                    {subjectStats.map(s => (
+                      <div key={s.sid} style={{ marginBottom:12 }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:5 }}>
+                          <div style={{ fontWeight:800, fontSize:14 }}>{s.icon} {s.name}</div>
+                          <div style={{ fontWeight:900, fontSize:14, color:s.color }}>{s.pct}% <span style={{ fontSize:11, color:T.mt, fontWeight:700 }}>({s.done}/{s.total})</span></div>
+                        </div>
+                        <div style={{ height:8, background:T.bd, borderRadius:4, overflow:"hidden" }}>
+                          <div style={{ height:"100%", width:`${s.pct}%`, background:s.color, borderRadius:4, transition:"width 0.6s ease" }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ── Progression par match ── */}
+                  <div className="pop" style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:"16px 18px", marginBottom:18 }}>
+                    <div style={{ fontWeight:900, fontSize:16, marginBottom:14 }}>⚽ Par match</div>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+                      {matchStats.map(m => (
+                        <div key={m.w} style={{ background:T.bg, border:`2px solid ${T.bd}`, borderRadius:14, padding:"12px 14px" }}>
+                          <div style={{ fontWeight:900, fontSize:15, marginBottom:6 }}>Match {m.w}</div>
+                          <div style={{ height:6, background:T.bd, borderRadius:3, overflow:"hidden", marginBottom:5 }}>
+                            <div style={{ height:"100%", width:`${m.pct}%`, background:m.pct>=80?"#58CC02":m.pct>=40?"#FFC800":"#1CB0F6", borderRadius:3 }} />
+                          </div>
+                          <div style={{ fontSize:12, color:T.mt, fontWeight:800 }}>{m.done}/{m.total} · {m.pct}%</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── Corrections en attente ── */}
+                  <div className="pop" style={{ background:T.sf, border:`2px solid ${T.bd}`, borderBottomWidth:5, borderRadius:20, padding:"16px 18px", marginBottom:18 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+                      <div style={{ fontSize:28 }}>📬</div>
+                      <div>
+                        <div style={{ fontSize:18, fontWeight:900 }}>Corrections en attente</div>
+                        <div style={{ fontSize:13, color:T.mt, fontWeight:700 }}>{pendingReviews.length} texte{pendingReviews.length!==1?"s":""} à lire</div>
+                      </div>
+                    </div>
+
+                    {pendingReviews.length===0 ? (
+                      <div style={{ textAlign:"center", padding:32, background:T.bg, borderRadius:18, border:`2px dashed ${T.bd}` }}>
+                        <div style={{ fontSize:48, marginBottom:10 }}>🎉</div>
+                        <div style={{ fontWeight:800, color:T.mt, fontSize:16 }}>Tout est à jour !</div>
+                      </div>
+                    ) : pendingReviews.map(([exId, ans]) => {
+                      const ex = findExercise(exId); if(!ex) return null;
+                      return (
+                        <div key={exId} style={{ background:T.bg, border:`3px solid ${T.warn}`, borderBottomWidth:6, borderRadius:20, marginBottom:16, overflow:"hidden" }}>
+                          <div style={{ background:T.warn+"20", padding:"14px 16px", borderBottom:`2px solid ${T.warn}40` }}>
+                            <div style={{ fontSize:11, color:T.warnDark, fontWeight:900, textTransform:"uppercase", marginBottom:5 }}>Texte soumis</div>
+                            <div style={{ fontSize:15, fontWeight:800, lineHeight:1.4 }}>{ex.q}</div>
+                          </div>
+                          <div style={{ padding:16 }}>
+                            <div style={{ background:T.sf, borderRadius:12, padding:14, fontSize:14, lineHeight:1.6, whiteSpace:"pre-wrap", border:`2px solid ${T.bd}`, fontWeight:600 }}>{ans.value}</div>
+                            <div style={{ display:"flex", gap:10, marginTop:14 }}>
+                              <button className="push" onClick={()=>approveAnswer(exId,true)} style={{ ...btn(T.ok), padding:12, fontSize:14, flex:1 }}>✅ Approuver +{Math.round((ex.xp||0)*0.5)} XP</button>
+                              <button className="push" onClick={()=>approveAnswer(exId,false)} style={{ ...btn(T.err), padding:12, fontSize:14, flex:1 }}>🔄 À refaire</button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              );
+            })()}
+
+            {view==="glossary" && <GlossaryView T={T} />}
+            {view==="calendar" && <CalendarView T={T} data={data} getDarker={getDarker} />}
+
+          </div>
+        </div>
+      );
+    }
+
+    // ─── Masquer le pre-splash natif et monter React ───
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
